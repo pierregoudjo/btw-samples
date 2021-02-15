@@ -127,15 +127,38 @@ fun main() {
         """
     Let's read the 'rosmary' message we serialized back into memory.
 
-    The process of reading a serialized object from byte array back into intance in memory
+    The process of reading a serialized object from byte array back into instance in memory
     is called deserialization.
     """
     )
 
-    val readMessage = Json.decodeFromString<AddProductToBasketMessage>(String(bytes))
+    val readMessage = decodeToAddProductToBasketMessage(bytes)
     println("[Serialized Message was read from bytes:] $readMessage")
-    println("Now let's apply that messaage to the product basket.")
+    println("Now let's apply that message to the product basket.")
     applyMessage(basket, readMessage)
+
+    println("""Note the readable string content with some 'garbled' binary data!
+    Now we'll save (persist) the 'rosmary' message to disk, in file 'message.bin'.
+
+    You can see the message.bin file inside of:
+    ' + ${File("message.bin").absolutePath} If you open it with Notepad, you will see 
+    the 'rosmary' message waiting on disk for you.
+    """)
+    File("message.bin").writeBytes(bytes)
+
+
+    println("""
+            Let's read the 'rosmary' message we serialized to file 'message.bin' back into memory.
+
+            The process of reading a serialized object from byte array back into intance in memory
+            is called deserialization.
+    """)
+    File("message.bin").readBytes().also {
+        println("[Serialized Message was read from disk:] $readMessage")
+        println("Now let's apply that messaage to the product basket.")
+        applyMessage(basket, decodeToAddProductToBasketMessage(it))
+    }
+
 
     println(
         """
@@ -189,6 +212,9 @@ fun main() {
         println("  ${total.key}: ${total.value}")
     }
 }
+
+private fun decodeToAddProductToBasketMessage(it: ByteArray) =
+    Json.decodeFromString<AddProductToBasketMessage>(String(it))
 
 fun applyMessage(basket: ProductBasket, message: Message) {
     basket.`when`(message)
@@ -256,5 +282,7 @@ class AddProductToBasketMessage(val name: String, val quantity: Double) : Messag
 
 @Serializable
 class RemoveProductFromBasketMessage(val name: String, val quantity: Double) : Message {
-
+    override fun toString(): String {
+        return "Remove $quantity $name from basket"
+    }
 }
