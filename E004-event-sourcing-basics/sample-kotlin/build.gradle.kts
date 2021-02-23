@@ -9,10 +9,12 @@ group = "xyz.goudjo.btw-samples"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
-
+dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.3")
+}
 
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "1.8"

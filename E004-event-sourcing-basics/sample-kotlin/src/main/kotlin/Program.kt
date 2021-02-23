@@ -1,4 +1,4 @@
-import kotlin.properties.Delegates
+import kotlinx.collections.immutable.*
 import kotlin.reflect.KProperty
 
 //// let's define our list of commands that the factory can carry out.
@@ -55,15 +55,53 @@ import kotlin.reflect.KProperty
 
 
 
-
 // Now let's "unwrap" AssignEmployeeToFactory
 // we'll start by adding a list of employees
 
 class FactoryImplementation3 {
 
+    class EmployeeDelegate {
+        operator fun getValue(thisRef: FactoryImplementation3, property: KProperty<*>): List<String> {
+            return thisRef.journal
+                .filterIsInstance<EmployeeAssignedToFactory>()
+                .fold(emptyList(), { acc, event -> acc + event.employeeName })
+        }
+    }
+
+    class ShipmentWaitingToBeUnloadedDelegate {
+        operator fun getValue(thisRef: FactoryImplementation3, property: KProperty<*>): List<List<CarPart>> {
+            return thisRef.journal
+                .fold(emptyList(), { acc, event -> when(event) {
+                    is ShipmentTransferredToCargoBay -> acc + listOf(event.carParts)
+                    is CargoBayUnloaded -> emptyList()
+                    else -> acc
+                } })
+
+        }
+    }
+
+    class CarPartStockDelegate {
+        operator fun getValue(thisRef: FactoryImplementation3, property: KProperty<*>): Map<String, Int> {
+
+            val partUsed = thisRef.journal
+                .filterIsInstance<CarBuilt>()
+                .flatMap { it.carParts }
+                .groupBy { it.name }
+                .mapValues { it.value.sumOf { carPart -> carPart.quantity } }
+
+            val partUnloaded = thisRef.journal
+                .filterIsInstance<CargoBayUnloaded>()
+                .flatMap { it.carParts }
+                .groupBy { it.name }
+                .mapValues { it.value.sumOf { carPart -> carPart.quantity } }
+
+            return partUnloaded.mapValues { it.value - partUsed.getOrDefault(it.key, 0) }
+        }
+    }
+
     // THE Factory Journal!
     // Where all things that happen inside of the factory are recorded
-    private val journalFactoryEvents = ArrayList<Event>()
+    private var journalFactoryEvents = persistentListOf<Event>()
 
     val journal: List<Event> by this::journalFactoryEvents
 
@@ -71,11 +109,14 @@ class FactoryImplementation3 {
     // these are the things that hold the data that represents
     // our current understanding of the state of the factory
     // they get their data from the methods that use them while the methods react to events
-    private val _ourListOfEmployeeNames = ArrayList<String>()
-    private val _shipmentsWaitingToBeUnloaded = ArrayList<List<CarPart>>()
+//    private val _ourListOfEmployeeNames = ArrayList<String>()
+
+    private val _ourListOfEmployeeNames: List<String> by EmployeeDelegate()
 
 
-//    val _stockJournal: String by this::journalFactoryEvents.getValue().size
+    private val _shipmentsWaitingToBeUnloaded: List<List<CarPart>> by ShipmentWaitingToBeUnloadedDelegate()
+
+    private val _stock: Map<String, Int> by CarPartStockDelegate()
 
 
     fun assignEmployeeToFactory(employeeName: String) {
@@ -102,12 +143,12 @@ class FactoryImplementation3 {
 
     fun transferShipmentToCargoBay(shipmentName: String, parts: List<CarPart>) {
         println("?> Command: transfer shipment to cargo")
-        if (_ourListOfEmployeeNames.size == 0) {
+        if (_ourListOfEmployeeNames.isEmpty()) {
             println(":> there has to be somebody at the factory in order to accept the shipment")
             return
         }
 
-        if (_shipmentsWaitingToBeUnloaded.size > 2) {
+        if (_shipmentsWaitingToBeUnloaded.size >= 2) {
             println(":> More than two shipments can't fit into this cargo bay")
             return
         }
@@ -127,12 +168,13 @@ class FactoryImplementation3 {
     }
 
     fun unloadShipmentFromCargoBay(employeeName: String) {
+        println("?> Command: Order $employeeName to unload shipment from cargo bay")
         if (!_ourListOfEmployeeNames.contains(employeeName)) {
             println(":> $employeeName must be assigned to the factory to unload the cargo bay")
             return
         }
 
-        if (_shipmentsWaitingToBeUnloaded.size == 0) {
+        if (_shipmentsWaitingToBeUnloaded.isEmpty()) {
             println(":> There should be a shipment to unload")
             return
         }
@@ -147,11 +189,39 @@ class FactoryImplementation3 {
         )
     }
 
-    fun produceCar(employeeName: String, carModel: String) {
+    fun produceCar(employeeName: String, carModel: CarModel) {
         // CheckIfWeHaveEnoughSpareParts
-        // CheckIfEmployeeIsAvailable
-        // DoRealWork
-        // RecordThatCarWasProduced
+        val neededParts = when(carModel) {
+            CarModel.MODEL_T -> listOf(
+                CarPart("wheels", 2),
+                CarPart("engine", 1),
+                CarPart("bits and pieces", 2))
+            CarModel.MODEL_V -> listOf(
+                CarPart("wheels", 2),
+                CarPart("engine", 1),
+                CarPart("bits and pieces", 2),
+                CarPart("chassis", 1))
+        }
+
+        val enoughPart = neededParts.fold( true,
+            {acc, curr -> acc && _stock.getOrDefault(curr.name, 0) >= curr.quantity}
+        )
+
+        if (!enoughPart) {
+            println("There is not enough part to build $carModel car")
+            return
+        }
+
+        if (!_ourListOfEmployeeNames.contains(employeeName)) {
+            println(":> $employeeName must be assigned to the factory to build a car")
+            return
+        }
+
+        doRealWork("Building the car...")
+
+        doPaperWork("Writing car specification documents")
+
+        recordThat(CarBuilt(employeeName, carModel, neededParts))
     }
 
     private fun doRealWork(workName: String) {
@@ -160,34 +230,13 @@ class FactoryImplementation3 {
     }
 
     private fun recordThat(event: Event) {
-        journalFactoryEvents.add(event)
+        journalFactoryEvents = (journalFactoryEvents + event)
         announceInsideFactory(event)
-        println("!> Event $event")
+
     }
 
     private fun announceInsideFactory(event: Event) {
-        when (event) {
-            is EmployeeAssignedToFactory -> announceInsideFactory(event)
-            is ShipmentTransferredToCargoBay -> announceInsideFactory(event)
-            is CurseWordUttered -> announceInsideFactory(event)
-            is CargoBayUnloaded -> announceInsideFactory(event)
-        }
-    }
-
-    private fun announceInsideFactory(event: EmployeeAssignedToFactory) {
-        _ourListOfEmployeeNames.add(event.employeeName)
-    }
-
-    private fun announceInsideFactory(event: ShipmentTransferredToCargoBay) {
-        _shipmentsWaitingToBeUnloaded.add(event.carParts)
-    }
-
-    private fun announceInsideFactory(event: CurseWordUttered) {
-
-    }
-
-    private fun announceInsideFactory(event: CargoBayUnloaded) {
-
+        println("!> Event $event")
     }
 
     private fun doPaperWork(workName: String) {
@@ -218,7 +267,25 @@ data class CargoBayUnloaded(val employeeName: String, val carParts: List<CarPart
         "$employeeName unloaded "+ carParts.map{ "${it.name} ${it.quantity} pcs"}.reduce { acc, s -> "$acc, $s" }
 }
 
+data class CarBuilt(val employeeName: String, val carModel: CarModel, val carParts: List<CarPart>): Event {
+    override fun toString() =
+        "Car $carModel built by $employeeName using " + carParts.map{ "${it.name} ${it.quantity} pcs"}.reduce { acc, s -> "$acc, $s" }
+}
+
 interface Event
+
+enum class CarModel {
+    MODEL_T {
+        override fun toString(): String {
+            return "Model T"
+        }
+    },
+    MODEL_V {
+        override fun toString(): String {
+            return "Model V"
+        }
+    }
+}
 
 data class CarPart(val name: String, val quantity: Int)
 
@@ -226,17 +293,49 @@ fun main() {
     println("A new day at the factory starts")
     val factory =  FactoryImplementation3()
     factory.transferShipmentToCargoBay("chassis", listOf(CarPart("chassis", 4)))
+
     factory.assignEmployeeToFactory("Yoda")
     factory.assignEmployeeToFactory("Luke")
+
     // Hmm, a duplicate employee name, wonder if that will work?
-    factory.assignEmployeeToFactory("Yoda");
-    factory.assignEmployeeToFactory("Bender");
+    factory.assignEmployeeToFactory("Yoda")
+
+    // An employee named "bender", why is that ringing a bell?
+    factory.assignEmployeeToFactory("Bender")
+
+    // Order an unknown employee to unload the shipment. Will it work
+    factory.unloadShipmentFromCargoBay("Lea")
+
+    factory.unloadShipmentFromCargoBay("Yoda")
 
     factory.transferShipmentToCargoBay("model T spare parts", listOf(
         CarPart("wheels", 20),
         CarPart("engine", 7),
         CarPart("bits and pieces", 2),
     ))
+
+    factory.unloadShipmentFromCargoBay("Yoda")
+
+
+    factory.transferShipmentToCargoBay("model T spare parts", listOf(
+        CarPart("wheels", 20),
+        CarPart("engine", 7),
+        CarPart("bits and pieces", 2),
+    ))
+    factory.transferShipmentToCargoBay("model T spare parts", listOf(
+        CarPart("wheels", 20),
+        CarPart("engine", 7),
+        CarPart("bits and pieces", 2),
+    ))
+    factory.transferShipmentToCargoBay("model T spare parts", listOf(
+        CarPart("wheels", 20),
+        CarPart("engine", 7),
+        CarPart("bits and pieces", 2),
+    ))
+    factory.unloadShipmentFromCargoBay("Yoda")
+
+    factory.produceCar("Yoda", CarModel.MODEL_T)
+    factory.produceCar("Luke", CarModel.MODEL_V)
 
     println("""
         It's the end of the day. Let's read our journal of events once more:
