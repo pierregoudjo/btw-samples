@@ -6,6 +6,8 @@ object MyTest : Spek({
     lateinit var factory: FactoryAggregate
     lateinit var exceptions: MutableList<Throwable>
 
+    //afterEachGroup { println(factory.state.journal) }
+
     Feature("Transferring shipment to cargo bay") {
 
         beforeEachScenario {
@@ -438,23 +440,206 @@ object MyTest : Spek({
         }
 
         Scenario("Order to a non assigned employee to produce a model T car") {
-            TODO("To implement")
+            Given("Yoda assigned to the factory") {
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Yoda")
+                        )
+                    )
+                )
+            }
+            When("Order given to Chewbacca to produce a model T car") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    factory.produceCar("Chewbacca", CarModel.MODEL_T)
+                }
+            }
+            Then("There should be an error") {
+                assertTrue { exceptions.isNotEmpty() }
+            }
+            And("The error should contains the message \"Chewbacca must be assigned to the factory\" ") {
+                assertTrue {
+                    exceptions.any {
+                        it.message?.contains("Chewbacca must be assigned to the factory")!!
+                    }
+                }
+            }
         }
 
         Scenario("Order to build a model T car but there is not enough parts") {
-            TODO("To implement")
+            Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels and 5 bits and pieces") {
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Yoda"),
+                            ShipmentTransferredToCargoBay(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5)
+                                )
+                            ),
+                            CargoBayUnloaded(
+                                "Yoda", listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5)
+                                )
+                            )
+                        )
+                    )
+                )
+            }
+            When("Yoda is ordered to build a model T car") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    factory.produceCar("Yoda", CarModel.MODEL_T)
+                }
+            }
+            Then("Then should be an error") {
+                assertTrue { exceptions.isNotEmpty() }
+            }
+
+            And("The error should contains the message \"There is not enough part to build ${CarModel.MODEL_T} car\" ") {
+                assertTrue {
+                    exceptions.any {
+                        it.message?.contains("There is not enough part to build ${CarModel.MODEL_T} car")!!
+                    }
+                }
+            }
         }
 
         Scenario("Order to build a model V car but there is not enough parts") {
-            TODO("To implement")
+            Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels and 5 bits and pieces") {
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Yoda"),
+                            ShipmentTransferredToCargoBay(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5)
+                                )
+                            ),
+                            CargoBayUnloaded(
+                                "Yoda", listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5)
+                                )
+                            )
+                        )
+                    )
+                )
+            }
+            When("Yoda is ordered to build a model T car") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    factory.produceCar("Yoda", CarModel.MODEL_V)
+                }
+            }
+            Then("Then should be an error") {
+                assertTrue { exceptions.isNotEmpty() }
+            }
+
+            And("The error should contains the message \"There is not enough part to build ${CarModel.MODEL_V} car\" ") {
+                assertTrue {
+                    exceptions.any {
+                        it.message?.contains("There is not enough part to build ${CarModel.MODEL_V} car")!!
+                    }
+                }
+            }
         }
 
         Scenario("Order to build a model T car and there is enough parts") {
-            TODO("To implement")
+            Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines") {
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Yoda"),
+                            ShipmentTransferredToCargoBay(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5),
+                                    CarPartPack("engine", 2),
+                                )
+                            ),
+                            CargoBayUnloaded(
+                                "Yoda", listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5),
+                                    CarPartPack("engine", 2),
+                                )
+                            )
+                        )
+                    )
+                )
+            }
+            When("Yoda is ordered to produce a model T car") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    factory.produceCar("Yoda", CarModel.MODEL_T)
+                }
+            }
+            Then("Then a model T car is built") {
+                assertTrue {
+                    factory.state.journal.contains(
+                        CarBuilt(
+                            "Yoda",
+                            CarModel.MODEL_T,
+                            CarModel.neededParts(CarModel.MODEL_T)
+                        )
+                    )
+                }
+            }
         }
 
         Scenario("Order to build a model V car and there is enough parts") {
-            TODO("To implement")
+            Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines") {
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Yoda"),
+                            ShipmentTransferredToCargoBay(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5),
+                                    CarPartPack("engine", 2),
+                                )
+                            ),
+                            CargoBayUnloaded(
+                                "Yoda", listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5),
+                                    CarPartPack("engine", 2),
+                                )
+                            )
+                        )
+                    )
+                )
+            }
+            When("Yoda is ordered to produce a model V car") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    factory.produceCar("Yoda", CarModel.MODEL_V)
+                }
+            }
+            Then("Then a model V car is built") {
+                assertTrue {
+                    factory.state.journal.contains(
+                        CarBuilt(
+                            "Yoda",
+                            CarModel.MODEL_V,
+                            CarModel.neededParts(CarModel.MODEL_V)
+                        )
+                    )
+                }
+            }
         }
     }
 })

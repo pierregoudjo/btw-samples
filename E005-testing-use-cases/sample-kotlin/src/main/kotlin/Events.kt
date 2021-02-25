@@ -38,6 +38,23 @@ enum class CarModel {
         override fun toString(): String {
             return "Model V"
         }
+    };
+
+    companion object {
+        fun neededParts(model: CarModel) =
+            when (model) {
+                MODEL_T -> listOf(
+                    CarPartPack("wheels", 2),
+                    CarPartPack("engine", 1),
+                    CarPartPack("bits and pieces", 2)
+                )
+                MODEL_V -> listOf(
+                    CarPartPack("wheels", 2),
+                    CarPartPack("engine", 1),
+                    CarPartPack("bits and pieces", 2),
+                    CarPartPack("chassis", 1)
+                )
+            }
     }
 }
 

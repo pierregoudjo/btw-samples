@@ -79,32 +79,21 @@ class FactoryAggregate(val state: FactoryState) {
 
     fun produceCar(employeeName: String, carModel: CarModel) {
         echoCommand("Order $employeeName to build a $carModel car")
-        // CheckIfWeHaveEnoughSpareParts
-        val neededParts = when (carModel) {
-            CarModel.MODEL_T -> listOf(
-                CarPartPack("wheels", 2),
-                CarPartPack("engine", 1),
-                CarPartPack("bits and pieces", 2)
-            )
-            CarModel.MODEL_V -> listOf(
-                CarPartPack("wheels", 2),
-                CarPartPack("engine", 1),
-                CarPartPack("bits and pieces", 2),
-                CarPartPack("chassis", 1)
-            )
-        }
 
-        val enoughPart = neededParts.fold(true,
-            { acc, curr -> acc && state.stock.getOrDefault(curr.name, 0) >= curr.quantity }
-        )
-
-        if (!enoughPart) {
-            println("There is not enough part to build $carModel car")
+        if (!state.listOfEmployeeNames.contains(employeeName)) {
+            fail("$employeeName must be assigned to the factory to build a car")
             return
         }
 
-        if (!state.listOfEmployeeNames.contains(employeeName)) {
-            println(":> $employeeName must be assigned to the factory to build a car")
+        // CheckIfWeHaveEnoughSpareParts
+        val neededPartsToBuildTheCar = CarModel.neededParts(carModel)
+
+        val isThereEnoughPartToBuildTheCar = neededPartsToBuildTheCar.fold(true,
+            { acc, curr -> acc && state.stock.getOrDefault(curr.name, 0) >= curr.quantity }
+        )
+
+        if (!isThereEnoughPartToBuildTheCar) {
+            fail("There is not enough part to build $carModel car")
             return
         }
 
@@ -112,7 +101,7 @@ class FactoryAggregate(val state: FactoryState) {
 
         doPaperWork("Writing car specification documents")
 
-        recordThat(CarBuilt(employeeName, carModel, neededParts))
+        recordThat(CarBuilt(employeeName, carModel, neededPartsToBuildTheCar))
     }
 
     private fun recordThat(event: Event) {
