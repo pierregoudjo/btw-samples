@@ -101,7 +101,7 @@ fun transferShipmentToCargoBay(shipmentName: String, partPacks: List<CarPartPack
 }
 
 private fun recordThat(events: List<Event>, state: FactoryState): FactoryState {
-    return mutate(events, state).also {
+    return apply(events, state).also {
         events.forEach {
             announceInsideFactory(it)
         }

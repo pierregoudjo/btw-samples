@@ -2,9 +2,7 @@ import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
 
 class FactoryState(journal: List<Event>) {
-    var events = journal.toPersistentList()
-
-    val journal: List<Event> by this::events
+    val journal = journal.toPersistentList()
 
     val listOfEmployeeNames: List<String> by EmployeeDelegate()
 
@@ -14,7 +12,7 @@ class FactoryState(journal: List<Event>) {
     val stock: Map<String, Int> by CarPartStockDelegate()
 }
 
-fun mutate(event: List<Event>, state: FactoryState): FactoryState {
-    state.events = (state.events + event)
-    return FactoryState(state.events)
+fun apply(event: List<Event>, state: FactoryState): FactoryState {
+    val events = (state.journal + event)
+    return FactoryState(events)
 }
