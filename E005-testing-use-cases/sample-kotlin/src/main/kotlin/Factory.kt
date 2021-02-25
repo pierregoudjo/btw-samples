@@ -5,8 +5,7 @@ class FactoryAggregate(val state: FactoryState) {
 
         // Hey look, a business rule implementation
         if (state.listOfEmployeeNames.contains(employeeName)) {
-            fail("the name of $employeeName only one can have")
-            return
+            return fail("the name of $employeeName only one can have")
         }
         // another check that needs to happen when assigning employees to the factory
         // multiple options to prove this critical business rule:
@@ -14,8 +13,7 @@ class FactoryAggregate(val state: FactoryState) {
         // Bender Bending Rodríguez: http://en.wikipedia.org/wiki/Bender_(Futurama)
 
         if (employeeName == "Bender") {
-            fail("Guys with the name 'bender' are trouble")
-            return
+            return fail("Guys with the name 'bender' are trouble")
         }
 
         doPaperWork("Assign employee to the factory")
@@ -26,18 +24,15 @@ class FactoryAggregate(val state: FactoryState) {
         echoCommand("transfer shipment to cargo")
 
         if (state.listOfEmployeeNames.isEmpty()) {
-            fail("there has to be somebody at the factory in order to accept the shipment")
-            return
+            return fail("there has to be somebody at the factory in order to accept the shipment")
         }
 
         if (partPacks.isEmpty()) {
-            fail("Empty shipments are not accepted!")
-            return
+            return fail("Empty shipments are not accepted!")
         }
 
         if (state.shipmentsWaitingToBeUnloaded.size >= 2) {
-            fail("More than two shipments can't fit into this cargo bay")
-            return
+            return fail("More than two shipments can't fit into this cargo bay")
         }
         doRealWork("opening cargo bay doors")
         recordThat(ShipmentTransferredToCargoBay(shipmentName = shipmentName, carPartPacks = partPacks))
@@ -58,13 +53,11 @@ class FactoryAggregate(val state: FactoryState) {
         echoCommand("Order $employeeName to unload shipment from cargo bay")
 
         if (!state.listOfEmployeeNames.contains(employeeName)) {
-            fail("$employeeName must be assigned to the factory to unload the cargo bay")
-            return
+            return fail("$employeeName must be assigned to the factory to unload the cargo bay")
         }
 
         if (state.shipmentsWaitingToBeUnloaded.isEmpty()) {
-            fail("There should be a shipment to unload")
-            return
+            return fail("There should be a shipment to unload")
         }
 
         doRealWork("passing supplies")
@@ -81,8 +74,7 @@ class FactoryAggregate(val state: FactoryState) {
         echoCommand("Order $employeeName to build a $carModel car")
 
         if (!state.listOfEmployeeNames.contains(employeeName)) {
-            fail("$employeeName must be assigned to the factory to build a car")
-            return
+            return fail("$employeeName must be assigned to the factory to build a car")
         }
 
         // CheckIfWeHaveEnoughSpareParts
@@ -93,8 +85,7 @@ class FactoryAggregate(val state: FactoryState) {
         )
 
         if (!isThereEnoughPartToBuildTheCar) {
-            fail("There is not enough part to build $carModel car")
-            return
+            return fail("There is not enough part to build $carModel car")
         }
 
         doRealWork("Building the car...")
