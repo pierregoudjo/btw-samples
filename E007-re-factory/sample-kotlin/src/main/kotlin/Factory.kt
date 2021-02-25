@@ -1,6 +1,6 @@
 class FactoryAggregate(val state: FactoryState) {
 
-    fun assignEmployeeToFactory(employeeName: String) {
+    fun assignEmployeeToFactory(employeeName: String, state: FactoryState) {
         echoCommand("assign employee $employeeName to the factory")
 
         // Hey look, a business rule implementation
@@ -17,10 +17,10 @@ class FactoryAggregate(val state: FactoryState) {
         }
 
         doPaperWork("Assign employee to the factory")
-        recordThat(EmployeeAssignedToFactory(employeeName))
+        recordThat(EmployeeAssignedToFactory(employeeName), state)
     }
 
-    fun transferShipmentToCargoBay(shipmentName: String, partPacks: List<CarPartPack>) {
+    fun transferShipmentToCargoBay(shipmentName: String, partPacks: List<CarPartPack>, state: FactoryState) {
         echoCommand("transfer shipment to cargo")
 
         if (state.listOfEmployeeNames.isEmpty()) {
@@ -35,7 +35,7 @@ class FactoryAggregate(val state: FactoryState) {
             return fail("More than two shipments can't fit into this cargo bay")
         }
         doRealWork("opening cargo bay doors")
-        recordThat(ShipmentTransferredToCargoBay(shipmentName = shipmentName, carPartPacks = partPacks))
+        recordThat(ShipmentTransferredToCargoBay(shipmentName = shipmentName, carPartPacks = partPacks), state)
 
         val totalCountOfParts = partPacks.sumOf { it.quantity }
 
@@ -44,12 +44,13 @@ class FactoryAggregate(val state: FactoryState) {
                 CurseWordUttered(
                     theWord = "Boltov tebe v korobky peredach",
                     meaning = "awe in the face of the amount of parts delivered"
-                )
+                ),
+                state
             )
         }
     }
 
-    fun unloadShipmentFromCargoBay(employeeName: String) {
+    fun unloadShipmentFromCargoBay(employeeName: String, state: FactoryState) {
         echoCommand("Order $employeeName to unload shipment from cargo bay")
 
         if (!state.listOfEmployeeNames.contains(employeeName)) {
@@ -66,11 +67,12 @@ class FactoryAggregate(val state: FactoryState) {
             ShipmentUnloadedFromCargoBay(
                 employeeName,
                 state.shipmentsWaitingToBeUnloaded.flatten()
-            )
+            ),
+            state
         )
     }
 
-    fun produceCar(employeeName: String, carModel: CarModel) {
+    fun produceCar(employeeName: String, carModel: CarModel, state: FactoryState) {
         echoCommand("Order $employeeName to build a $carModel car")
 
         if (!state.listOfEmployeeNames.contains(employeeName)) {
@@ -92,27 +94,27 @@ class FactoryAggregate(val state: FactoryState) {
 
         doPaperWork("Writing car specification documents")
 
-        recordThat(CarProduced(employeeName, carModel, neededPartsToBuildTheCar))
+        recordThat(CarProduced(employeeName, carModel, neededPartsToBuildTheCar), state)
     }
+}
 
-    private fun recordThat(event: Event) {
-        state.mutate(event)
-        announceInsideFactory(event)
-    }
+private fun recordThat(event: Event, state: FactoryState) {
+    state.mutate(event)
+    announceInsideFactory(event)
+}
 
-    private fun announceInsideFactory(event: Event) {
-        println("!> Event $event".green())
-    }
+private fun announceInsideFactory(event: Event) {
+    println("!> Event $event".green())
+}
 
-    private fun doPaperWork(workName: String) {
-        println(" > Work: Papers... $workName ...")
-        Thread.sleep(1000)
-    }
+private fun doPaperWork(workName: String) {
+    println(" > Work: Papers... $workName ...")
+    Thread.sleep(1000)
+}
 
-    private fun doRealWork(workName: String) {
-        println(" > Work: heavy stuff... $workName ...")
-        Thread.sleep(1000)
-    }
+private fun doRealWork(workName: String) {
+    println(" > Work: heavy stuff... $workName ...")
+    Thread.sleep(1000)
 }
 
 fun echoCommand(message: String) {
