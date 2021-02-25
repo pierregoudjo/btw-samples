@@ -1,6 +1,6 @@
 fun main() {
     println("A new day at the factory starts")
-    val factory =  FactoryAggregate(FactoryState(emptyList()))
+    val factory = FactoryAggregate(FactoryState(emptyList()))
     factory.transferShipmentToCargoBay("chassis", listOf(CarPartPack("chassis", 4)))
 
     factory.assignEmployeeToFactory("Yoda")
@@ -17,39 +17,49 @@ fun main() {
 
     factory.unloadShipmentFromCargoBay("Yoda")
 
-    factory.transferShipmentToCargoBay("model T spare parts", listOf(
-        CarPartPack("wheels", 20),
-        CarPartPack("engine", 7),
-        CarPartPack("bits and pieces", 2),
-    ))
+    factory.transferShipmentToCargoBay(
+        "model T spare parts", listOf(
+            CarPartPack("wheels", 20),
+            CarPartPack("engine", 7),
+            CarPartPack("bits and pieces", 2),
+        )
+    )
 
     factory.unloadShipmentFromCargoBay("Yoda")
 
 
-    factory.transferShipmentToCargoBay("model T spare parts", listOf(
-        CarPartPack("wheels", 20),
-        CarPartPack("engine", 7),
-        CarPartPack("bits and pieces", 2),
-    ))
-    factory.transferShipmentToCargoBay("model T spare parts", listOf(
-        CarPartPack("wheels", 20),
-        CarPartPack("engine", 7),
-        CarPartPack("bits and pieces", 2),
-    ))
-    factory.transferShipmentToCargoBay("model T spare parts", listOf(
-        CarPartPack("wheels", 20),
-        CarPartPack("engine", 7),
-        CarPartPack("bits and pieces", 2),
-    ))
+    factory.transferShipmentToCargoBay(
+        "model T spare parts", listOf(
+            CarPartPack("wheels", 20),
+            CarPartPack("engine", 7),
+            CarPartPack("bits and pieces", 2),
+        )
+    )
+    factory.transferShipmentToCargoBay(
+        "model T spare parts", listOf(
+            CarPartPack("wheels", 20),
+            CarPartPack("engine", 7),
+            CarPartPack("bits and pieces", 2),
+        )
+    )
+    factory.transferShipmentToCargoBay(
+        "model T spare parts", listOf(
+            CarPartPack("wheels", 20),
+            CarPartPack("engine", 7),
+            CarPartPack("bits and pieces", 2),
+        )
+    )
     factory.unloadShipmentFromCargoBay("Yoda")
 
     factory.produceCar("Yoda", CarModel.MODEL_T)
     factory.produceCar("Luke", CarModel.MODEL_V)
 
-    println("""
+    println(
+        """
         It's the end of the day. Let's read our journal of events once more:
         We should only see events below that were actually allowed to be recorded.
-    """.trimIndent())
+    """.trimIndent()
+    )
 
     factory.state.journal.forEach { println("!> $it") }
 

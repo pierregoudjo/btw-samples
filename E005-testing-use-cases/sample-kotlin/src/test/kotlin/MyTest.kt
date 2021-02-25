@@ -105,12 +105,14 @@ object MyTest : Spek({
 
         Scenario("A shipment comes to a factory with an employee assigned and 1 shipment of in the cargo bay") {
             Given("A factory with an employee assigned and 1 shipment in the cargo bay") {
-                factory = FactoryAggregate(FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-55", listOf(CarPartPack("wheels", 5)))
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Chewbacca"),
+                            ShipmentTransferredToCargoBay("shipment-55", listOf(CarPartPack("wheels", 5)))
+                        )
                     )
-                ))
+                )
             }
 
             When("A shipment comes to the factory") {
@@ -137,12 +139,14 @@ object MyTest : Spek({
 
         Scenario("A shipment of 5 wheels and 7 engines comes to the factory") {
             Given("A factory with an employee assigned and 1 shipment in the cargo bay") {
-                factory = FactoryAggregate(FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-58", listOf(CarPartPack("chassis", 3)))
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Chewbacca"),
+                            ShipmentTransferredToCargoBay("shipment-58", listOf(CarPartPack("chassis", 3)))
+                        )
                     )
-                ))
+                )
             }
             When("A shipment of 5 wheels and 7 engines comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
@@ -242,12 +246,14 @@ object MyTest : Spek({
 
         Scenario("Order given non-assigned employee to the factory to unload the cargo bay") {
             Given("Chewbacca assigned to the factory and 1 shipment transferred in the cargo bay") {
-                factory = FactoryAggregate(FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4)))
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Chewbacca"),
+                            ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4)))
+                        )
                     )
-                ))
+                )
             }
             When("There is an order given to Yoda to unload the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
@@ -265,11 +271,13 @@ object MyTest : Spek({
 
         Scenario("No employee assigned to the factory to unload the cargo bay") {
             Given("No employee assigned to the factory and 1 shipment transferred in the cargo bay") {
-                factory = FactoryAggregate(FactoryState(
-                    listOf(
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4)))
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4)))
+                        )
                     )
-                ))
+                )
             }
             When("There is an order given to Yoda to unload the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
@@ -288,11 +296,13 @@ object MyTest : Spek({
         Scenario("No shipment to unload") {
 
             Given("Chewbacca assigned to the factory") {
-                factory = FactoryAggregate(FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Chewbacca"),
+                        )
                     )
-                ))
+                )
             }
 
             When("There is an order given to Chewbacca to unload the cargo bay") {
@@ -314,12 +324,14 @@ object MyTest : Spek({
         Scenario("Order an assigned employee to unload a shipment from the cargo bay") {
 
             Given("Chewbacca assigned to the factory and there is a shipment of 4 chassis in the cargo bay") {
-                factory = FactoryAggregate(FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4)))
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Chewbacca"),
+                            ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4)))
+                        )
                     )
-                ))
+                )
             }
 
             When("There is an order given to Chewbacca to unload the cargo bay") {
@@ -341,14 +353,19 @@ object MyTest : Spek({
         Scenario("Order an assigned employee to unload two shipments from the cargo bay") {
 
             Given("Chewbacca assigned to the factory and there is a shipment of 4 chassis and another shipment of 2 wheels and 3 engines in the cargo bay") {
-                factory = FactoryAggregate(FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4))),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("wheel", 2), CarPartPack("engine", 3))),
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Chewbacca"),
+                            ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4))),
+                            ShipmentTransferredToCargoBay(
+                                "shipment-1",
+                                listOf(CarPartPack("wheel", 2), CarPartPack("engine", 3))
+                            ),
 
+                            )
                     )
-                ))
+                )
             }
 
             When("There is an order given to Chewbacca to unload the cargo bay") {
@@ -361,11 +378,13 @@ object MyTest : Spek({
             Then("Chewbacca unloaded the cargo bay from 3 chassis, 2 wheels and 3 engines") {
                 assertTrue {
                     factory.state.journal.contains(
-                        CargoBayUnloaded("Chewbacca", listOf(
-                            CarPartPack("chassis", 4),
-                            CarPartPack("wheel", 2),
-                            CarPartPack("engine", 3),
-                        ))
+                        CargoBayUnloaded(
+                            "Chewbacca", listOf(
+                                CarPartPack("chassis", 4),
+                                CarPartPack("wheel", 2),
+                                CarPartPack("engine", 3),
+                            )
+                        )
                     )
                 }
             }
@@ -374,13 +393,18 @@ object MyTest : Spek({
         Scenario("Order an assigned employee to unload two shipments with common items from the cargo bay") {
 
             Given("Chewbacca assigned to the factory and there is a shipment of 4 chassis and another shipment of 2 wheels and 3 chassis in the cargo bay") {
-                factory = FactoryAggregate(FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4))),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("wheel", 2), CarPartPack("chassis", 3))),
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Chewbacca"),
+                            ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4))),
+                            ShipmentTransferredToCargoBay(
+                                "shipment-1",
+                                listOf(CarPartPack("wheel", 2), CarPartPack("chassis", 3))
+                            ),
                         )
-                ))
+                    )
+                )
             }
 
             When("There is an order given to Chewbacca to unload the cargo bay") {
@@ -393,11 +417,13 @@ object MyTest : Spek({
             Then("Chewbacca unloaded the cargo bay from 4-chassis pack, 2 wheels-pack and 3-chassis pack") {
                 assertTrue {
                     factory.state.journal.contains(
-                        CargoBayUnloaded("Chewbacca", listOf(
-                            CarPartPack("chassis", 4),
-                            CarPartPack("wheel", 2),
-                            CarPartPack("chassis", 3),
-                        ))
+                        CargoBayUnloaded(
+                            "Chewbacca", listOf(
+                                CarPartPack("chassis", 4),
+                                CarPartPack("wheel", 2),
+                                CarPartPack("chassis", 3),
+                            )
+                        )
                     )
                 }
             }

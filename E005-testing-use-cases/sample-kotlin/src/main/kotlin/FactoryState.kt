@@ -1,7 +1,7 @@
 import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
 
-class FactoryState (journal: List<Event>){
+class FactoryState(journal: List<Event>) {
     private var events = journal.toPersistentList()
 
     val journal: List<Event> by this::events

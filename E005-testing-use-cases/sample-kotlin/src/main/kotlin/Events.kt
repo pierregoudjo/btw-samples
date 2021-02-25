@@ -1,28 +1,30 @@
-data class CurseWordUttered(val theWord: String, val meaning: String): Event {
+data class CurseWordUttered(val theWord: String, val meaning: String) : Event {
     override fun toString() =
         "'$theWord' was heard within the walls. It meant: '$meaning'"
 
 }
 
-data class ShipmentTransferredToCargoBay(val shipmentName: String, val carPartPacks: List<CarPartPack>): Event {
+data class ShipmentTransferredToCargoBay(val shipmentName: String, val carPartPacks: List<CarPartPack>) : Event {
     override fun toString() =
-        "Shipment '$shipmentName' transferred to cargo bay: "+ carPartPacks.map{ "${it.name} ${it.quantity} pcs"}.reduce { acc, s -> "$acc, $s" }
+        "Shipment '$shipmentName' transferred to cargo bay: " + carPartPacks.map { "${it.name} ${it.quantity} pcs" }
+            .reduce { acc, s -> "$acc, $s" }
 
 }
 
-data class EmployeeAssignedToFactory(val employeeName: String): Event {
+data class EmployeeAssignedToFactory(val employeeName: String) : Event {
     override fun toString() =
         "new worker joins our forces: '$employeeName'"
 }
 
-data class CargoBayUnloaded(val employeeName: String, val carPartPacks: List<CarPartPack>): Event {
+data class CargoBayUnloaded(val employeeName: String, val carPartPacks: List<CarPartPack>) : Event {
     override fun toString() =
-        "$employeeName unloaded "+ carPartPacks.map{ "${it.name} ${it.quantity} pcs"}.reduce { acc, s -> "$acc, $s" }
+        "$employeeName unloaded " + carPartPacks.map { "${it.name} ${it.quantity} pcs" }.reduce { acc, s -> "$acc, $s" }
 }
 
-data class CarBuilt(val employeeName: String, val carModel: CarModel, val carPartPacks: List<CarPartPack>): Event {
+data class CarBuilt(val employeeName: String, val carModel: CarModel, val carPartPacks: List<CarPartPack>) : Event {
     override fun toString() =
-        "Car $carModel built by $employeeName using " + carPartPacks.map{ "${it.name} ${it.quantity} pcs"}.reduce { acc, s -> "$acc, $s" }
+        "Car $carModel built by $employeeName using " + carPartPacks.map { "${it.name} ${it.quantity} pcs" }
+            .reduce { acc, s -> "$acc, $s" }
 }
 
 interface Event
@@ -38,4 +40,5 @@ enum class CarModel {
         }
     }
 }
+
 data class CarPartPack(val name: String, val quantity: Int)

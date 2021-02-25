@@ -22,11 +22,13 @@ class CarPartStockDelegate {
 class ShipmentWaitingToBeUnloadedDelegate {
     operator fun getValue(thisRef: FactoryState, property: KProperty<*>): List<List<CarPartPack>> {
         return thisRef.journal
-            .fold(emptyList(), { acc, event -> when(event) {
-                is ShipmentTransferredToCargoBay -> acc + listOf(event.carPartPacks)
-                is CargoBayUnloaded -> emptyList()
-                else -> acc
-            } })
+            .fold(emptyList(), { acc, event ->
+                when (event) {
+                    is ShipmentTransferredToCargoBay -> acc + listOf(event.carPartPacks)
+                    is CargoBayUnloaded -> emptyList()
+                    else -> acc
+                }
+            })
 
     }
 }

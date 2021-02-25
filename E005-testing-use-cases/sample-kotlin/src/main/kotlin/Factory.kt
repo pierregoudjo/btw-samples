@@ -1,5 +1,3 @@
-import java.lang.IllegalStateException
-
 class FactoryAggregate(val state: FactoryState) {
 
     fun assignEmployeeToFactory(employeeName: String) {
@@ -82,7 +80,7 @@ class FactoryAggregate(val state: FactoryState) {
     fun produceCar(employeeName: String, carModel: CarModel) {
         echoCommand("Order $employeeName to build a $carModel car")
         // CheckIfWeHaveEnoughSpareParts
-        val neededParts = when(carModel) {
+        val neededParts = when (carModel) {
             CarModel.MODEL_T -> listOf(
                 CarPartPack("wheels", 2),
                 CarPartPack("engine", 1),
@@ -96,8 +94,8 @@ class FactoryAggregate(val state: FactoryState) {
             )
         }
 
-        val enoughPart = neededParts.fold( true,
-            {acc, curr -> acc && state.stock.getOrDefault(curr.name, 0) >= curr.quantity}
+        val enoughPart = neededParts.fold(true,
+            { acc, curr -> acc && state.stock.getOrDefault(curr.name, 0) >= curr.quantity }
         )
 
         if (!enoughPart) {
