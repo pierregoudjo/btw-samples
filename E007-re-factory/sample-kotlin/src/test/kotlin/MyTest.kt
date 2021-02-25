@@ -24,7 +24,7 @@ object MyTest : Spek({
 
             When("An empty shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.transferShipmentToCargoBay("some shipment", emptyList(), factory.state)
+                    transferShipmentToCargoBay("some shipment", emptyList(), factory.state)
                 }
             }
 
@@ -43,7 +43,7 @@ object MyTest : Spek({
             }
             When("An empty shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.transferShipmentToCargoBay("some shipment", emptyList(), factory.state)
+                    transferShipmentToCargoBay("some shipment", emptyList(), factory.state)
                 }
             }
 
@@ -63,7 +63,7 @@ object MyTest : Spek({
 
             When("An empty shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.transferShipmentToCargoBay("some shipment", emptyList(), factory.state)
+                    transferShipmentToCargoBay("some shipment", emptyList(), factory.state)
                 }
             }
 
@@ -91,7 +91,7 @@ object MyTest : Spek({
 
             When("A new shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.transferShipmentToCargoBay("shipment-13", listOf(CarPartPack("bmw6", 6)), factory.state)
+                    transferShipmentToCargoBay("shipment-13", listOf(CarPartPack("bmw6", 6)), factory.state)
                 }
             }
 
@@ -120,7 +120,7 @@ object MyTest : Spek({
 
             When("A shipment comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.transferShipmentToCargoBay(
+                    transferShipmentToCargoBay(
                         "shipment-56",
                         listOf(CarPartPack("engine", 6), CarPartPack("chassis", 2)),
                         factory.state
@@ -154,7 +154,7 @@ object MyTest : Spek({
             }
             When("A shipment of 5 wheels and 7 engines comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.transferShipmentToCargoBay(
+                    transferShipmentToCargoBay(
                         "shipment-56",
                         listOf(CarPartPack("wheels", 5), CarPartPack("engines", 7)),
                         factory.state
@@ -192,7 +192,7 @@ object MyTest : Spek({
             }
             When("An employee named \"Fry\" comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.assignEmployeeToFactory("Fry", factory.state)
+                    assignEmployeeToFactory("Fry", factory.state)
                 }
             }
             Then("Fry is assigned to the factory") {
@@ -209,7 +209,7 @@ object MyTest : Spek({
 
             When("An employee named \"Fry\" comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.assignEmployeeToFactory("Fry", factory.state)
+                    assignEmployeeToFactory("Fry", factory.state)
                 }
             }
 
@@ -227,7 +227,7 @@ object MyTest : Spek({
         Scenario("Bender comes to the factory") {
             When("An employee named Bender is assigned to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.assignEmployeeToFactory("Bender", factory.state)
+                    assignEmployeeToFactory("Bender", factory.state)
                 }
             }
 
@@ -262,7 +262,7 @@ object MyTest : Spek({
             }
             When("There is an order given to Yoda to unload the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.unloadShipmentFromCargoBay("Yoda", factory.state)
+                    unloadShipmentFromCargoBay("Yoda", factory.state)
                 }
 
             }
@@ -286,7 +286,7 @@ object MyTest : Spek({
             }
             When("There is an order given to Yoda to unload the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.unloadShipmentFromCargoBay("Yoda", factory.state)
+                    unloadShipmentFromCargoBay("Yoda", factory.state)
                 }
 
             }
@@ -312,7 +312,7 @@ object MyTest : Spek({
 
             When("There is an order given to Chewbacca to unload the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.unloadShipmentFromCargoBay("Chewbacca", factory.state)
+                    unloadShipmentFromCargoBay("Chewbacca", factory.state)
                 }
 
             }
@@ -341,7 +341,7 @@ object MyTest : Spek({
 
             When("There is an order given to Chewbacca to unload the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.unloadShipmentFromCargoBay("Chewbacca", factory.state)
+                    unloadShipmentFromCargoBay("Chewbacca", factory.state)
                 }
 
             }
@@ -375,7 +375,7 @@ object MyTest : Spek({
 
             When("There is an order given to Chewbacca to unload the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.unloadShipmentFromCargoBay("Chewbacca", factory.state)
+                    unloadShipmentFromCargoBay("Chewbacca", factory.state)
                 }
 
             }
@@ -414,7 +414,7 @@ object MyTest : Spek({
 
             When("There is an order given to Chewbacca to unload the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.unloadShipmentFromCargoBay("Chewbacca", factory.state)
+                    unloadShipmentFromCargoBay("Chewbacca", factory.state)
                 }
 
             }
@@ -454,7 +454,7 @@ object MyTest : Spek({
             }
             When("Order given to Chewbacca to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.produceCar("Chewbacca", CarModel.MODEL_T, factory.state)
+                    produceCar("Chewbacca", CarModel.MODEL_T, factory.state)
                 }
             }
             Then("There should be an error") {
@@ -496,7 +496,7 @@ object MyTest : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.produceCar("Yoda", CarModel.MODEL_T, factory.state)
+                    produceCar("Yoda", CarModel.MODEL_T, factory.state)
                 }
             }
             Then("Then should be an error") {
@@ -539,7 +539,7 @@ object MyTest : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.produceCar("Yoda", CarModel.MODEL_V, factory.state)
+                    produceCar("Yoda", CarModel.MODEL_V, factory.state)
                 }
             }
             Then("Then should be an error") {
@@ -584,7 +584,7 @@ object MyTest : Spek({
             }
             When("Yoda is ordered to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.produceCar("Yoda", CarModel.MODEL_T, factory.state)
+                    produceCar("Yoda", CarModel.MODEL_T, factory.state)
                 }
             }
             Then("Then a model T car is built") {
@@ -629,7 +629,7 @@ object MyTest : Spek({
             }
             When("Yoda is ordered to produce a model V car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.produceCar("Yoda", CarModel.MODEL_V, factory.state)
+                    produceCar("Yoda", CarModel.MODEL_V, factory.state)
                 }
             }
             Then("Then a model V car is built") {
@@ -681,12 +681,12 @@ object MyTest : Spek({
             }
             When("Yoda is ordered to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.produceCar("Yoda", CarModel.MODEL_T, factory.state)
+                    produceCar("Yoda", CarModel.MODEL_T, factory.state)
                 }
             }
             When("Luke is ordered to produce a model V car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.produceCar("Luke", CarModel.MODEL_V, factory.state)
+                    produceCar("Luke", CarModel.MODEL_V, factory.state)
                 }
             }
             Then("Then a model T car is built") {
@@ -759,7 +759,7 @@ object MyTest : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    factory.produceCar("Yoda", CarModel.MODEL_T, factory.state)
+                    produceCar("Yoda", CarModel.MODEL_T, factory.state)
                 }
             }
             Then("There should be an error") {
