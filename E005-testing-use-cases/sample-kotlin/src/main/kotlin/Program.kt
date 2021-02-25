@@ -1,7 +1,7 @@
 fun main() {
     println("A new day at the factory starts")
     val factory =  FactoryAggregate(FactoryState(emptyList()))
-    factory.transferShipmentToCargoBay("chassis", listOf(CarPart("chassis", 4)))
+    factory.transferShipmentToCargoBay("chassis", listOf(CarPartPack("chassis", 4)))
 
     factory.assignEmployeeToFactory("Yoda")
     factory.assignEmployeeToFactory("Luke")
@@ -18,28 +18,28 @@ fun main() {
     factory.unloadShipmentFromCargoBay("Yoda")
 
     factory.transferShipmentToCargoBay("model T spare parts", listOf(
-        CarPart("wheels", 20),
-        CarPart("engine", 7),
-        CarPart("bits and pieces", 2),
+        CarPartPack("wheels", 20),
+        CarPartPack("engine", 7),
+        CarPartPack("bits and pieces", 2),
     ))
 
     factory.unloadShipmentFromCargoBay("Yoda")
 
 
     factory.transferShipmentToCargoBay("model T spare parts", listOf(
-        CarPart("wheels", 20),
-        CarPart("engine", 7),
-        CarPart("bits and pieces", 2),
+        CarPartPack("wheels", 20),
+        CarPartPack("engine", 7),
+        CarPartPack("bits and pieces", 2),
     ))
     factory.transferShipmentToCargoBay("model T spare parts", listOf(
-        CarPart("wheels", 20),
-        CarPart("engine", 7),
-        CarPart("bits and pieces", 2),
+        CarPartPack("wheels", 20),
+        CarPartPack("engine", 7),
+        CarPartPack("bits and pieces", 2),
     ))
     factory.transferShipmentToCargoBay("model T spare parts", listOf(
-        CarPart("wheels", 20),
-        CarPart("engine", 7),
-        CarPart("bits and pieces", 2),
+        CarPartPack("wheels", 20),
+        CarPartPack("engine", 7),
+        CarPartPack("bits and pieces", 2),
     ))
     factory.unloadShipmentFromCargoBay("Yoda")
 

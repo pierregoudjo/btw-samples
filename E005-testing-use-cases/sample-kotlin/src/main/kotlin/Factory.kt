@@ -1,11 +1,13 @@
+import java.lang.IllegalStateException
+
 class FactoryAggregate(val state: FactoryState) {
 
     fun assignEmployeeToFactory(employeeName: String) {
-        println("<? Command assign employee $employeeName to the factory")
+        echoCommand("assign employee $employeeName to the factory")
 
         // Hey look, a business rule implementation
         if (state.listOfEmployeeNames.contains(employeeName)) {
-            println(":> the name of $employeeName only one can have")
+            fail("the name of $employeeName only one can have")
             return
         }
         // another check that needs to happen when assigning employees to the factory
@@ -14,7 +16,7 @@ class FactoryAggregate(val state: FactoryState) {
         // Bender Bending Rodríguez: http://en.wikipedia.org/wiki/Bender_(Futurama)
 
         if (employeeName == "Bender") {
-            println(":> Guys with the name 'bender' are trouble")
+            fail("Guys with the name 'bender' are trouble")
             return
         }
 
@@ -22,21 +24,27 @@ class FactoryAggregate(val state: FactoryState) {
         recordThat(EmployeeAssignedToFactory(employeeName))
     }
 
-    fun transferShipmentToCargoBay(shipmentName: String, parts: List<CarPart>) {
-        println("?> Command: transfer shipment to cargo")
+    fun transferShipmentToCargoBay(shipmentName: String, partPacks: List<CarPartPack>) {
+        echoCommand("transfer shipment to cargo")
+
         if (state.listOfEmployeeNames.isEmpty()) {
-            println(":> there has to be somebody at the factory in order to accept the shipment")
+            fail("there has to be somebody at the factory in order to accept the shipment")
+            return
+        }
+
+        if (partPacks.isEmpty()) {
+            fail("Empty shipments are not accepted!")
             return
         }
 
         if (state.shipmentsWaitingToBeUnloaded.size >= 2) {
-            println(":> More than two shipments can't fit into this cargo bay")
+            fail("More than two shipments can't fit into this cargo bay")
             return
         }
         doRealWork("opening cargo bay doors")
-        recordThat(ShipmentTransferredToCargoBay(shipmentName = shipmentName, carParts = parts))
+        recordThat(ShipmentTransferredToCargoBay(shipmentName = shipmentName, carPartPacks = partPacks))
 
-        val totalCountOfParts = parts.sumOf { it.quantity }
+        val totalCountOfParts = partPacks.sumOf { it.quantity }
 
         if (totalCountOfParts > 10) {
             recordThat(
@@ -49,19 +57,20 @@ class FactoryAggregate(val state: FactoryState) {
     }
 
     fun unloadShipmentFromCargoBay(employeeName: String) {
-        println("?> Command: Order $employeeName to unload shipment from cargo bay")
+        echoCommand("Order $employeeName to unload shipment from cargo bay")
+
         if (!state.listOfEmployeeNames.contains(employeeName)) {
-            println(":> $employeeName must be assigned to the factory to unload the cargo bay")
+            fail("$employeeName must be assigned to the factory to unload the cargo bay")
             return
         }
 
         if (state.shipmentsWaitingToBeUnloaded.isEmpty()) {
-            println(":> There should be a shipment to unload")
+            fail("There should be a shipment to unload")
             return
         }
 
-         doRealWork("passing supplies")
-        // RecordThatSuppliesWereUnloadedFromCargoBay()
+        doRealWork("passing supplies")
+
         recordThat(
             CargoBayUnloaded(
                 employeeName,
@@ -71,18 +80,19 @@ class FactoryAggregate(val state: FactoryState) {
     }
 
     fun produceCar(employeeName: String, carModel: CarModel) {
+        echoCommand("Order $employeeName to build a $carModel car")
         // CheckIfWeHaveEnoughSpareParts
         val neededParts = when(carModel) {
             CarModel.MODEL_T -> listOf(
-                CarPart("wheels", 2),
-                CarPart("engine", 1),
-                CarPart("bits and pieces", 2)
+                CarPartPack("wheels", 2),
+                CarPartPack("engine", 1),
+                CarPartPack("bits and pieces", 2)
             )
             CarModel.MODEL_V -> listOf(
-                CarPart("wheels", 2),
-                CarPart("engine", 1),
-                CarPart("bits and pieces", 2),
-                CarPart("chassis", 1)
+                CarPartPack("wheels", 2),
+                CarPartPack("engine", 1),
+                CarPartPack("bits and pieces", 2),
+                CarPartPack("chassis", 1)
             )
         }
 
@@ -113,7 +123,7 @@ class FactoryAggregate(val state: FactoryState) {
     }
 
     private fun announceInsideFactory(event: Event) {
-        println("!> Event $event")
+        println("!> Event $event".green())
     }
 
     private fun doPaperWork(workName: String) {
@@ -126,3 +136,16 @@ class FactoryAggregate(val state: FactoryState) {
         Thread.sleep(1000)
     }
 }
+
+fun echoCommand(message: String) {
+    println("?> Command: $message".yellow())
+}
+
+fun fail(message: String) {
+    println(":> $message".red())
+    throw IllegalStateException(message)
+}
+
+fun String.red() = "\u001B[41m$this\u001B[0m"
+fun String.green() = "\u001B[32m$this\u001B[0m"
+fun String.yellow() = "\u001B[33m$this\u001B[0m"

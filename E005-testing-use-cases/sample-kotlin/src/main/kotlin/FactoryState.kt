@@ -9,7 +9,7 @@ class FactoryState (journal: List<Event>){
     val listOfEmployeeNames: List<String> by EmployeeDelegate()
 
 
-    val shipmentsWaitingToBeUnloaded: List<List<CarPart>> by ShipmentWaitingToBeUnloadedDelegate()
+    val shipmentsWaitingToBeUnloaded: List<List<CarPartPack>> by ShipmentWaitingToBeUnloadedDelegate()
 
     val stock: Map<String, Int> by CarPartStockDelegate()
 
