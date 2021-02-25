@@ -16,12 +16,12 @@ data class EmployeeAssignedToFactory(val employeeName: String) : Event {
         "new worker joins our forces: '$employeeName'"
 }
 
-data class CargoBayUnloaded(val employeeName: String, val carPartPacks: List<CarPartPack>) : Event {
+data class ShipmentUnloadedFromCargoBay(val employeeName: String, val carPartPacks: List<CarPartPack>) : Event {
     override fun toString() =
         "$employeeName unloaded " + carPartPacks.map { "${it.name} ${it.quantity} pcs" }.reduce { acc, s -> "$acc, $s" }
 }
 
-data class CarBuilt(val employeeName: String, val carModel: CarModel, val carPartPacks: List<CarPartPack>) : Event {
+data class CarProduced(val employeeName: String, val carModel: CarModel, val carPartPacks: List<CarPartPack>) : Event {
     override fun toString() =
         "Car $carModel built by $employeeName using " + carPartPacks.map { "${it.name} ${it.quantity} pcs" }
             .reduce { acc, s -> "$acc, $s" }

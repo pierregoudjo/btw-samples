@@ -63,7 +63,7 @@ class FactoryAggregate(val state: FactoryState) {
         doRealWork("passing supplies")
 
         recordThat(
-            CargoBayUnloaded(
+            ShipmentUnloadedFromCargoBay(
                 employeeName,
                 state.shipmentsWaitingToBeUnloaded.flatten()
             )
@@ -92,7 +92,7 @@ class FactoryAggregate(val state: FactoryState) {
 
         doPaperWork("Writing car specification documents")
 
-        recordThat(CarBuilt(employeeName, carModel, neededPartsToBuildTheCar))
+        recordThat(CarProduced(employeeName, carModel, neededPartsToBuildTheCar))
     }
 
     private fun recordThat(event: Event) {

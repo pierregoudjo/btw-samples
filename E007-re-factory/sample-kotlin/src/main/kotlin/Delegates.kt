@@ -4,13 +4,13 @@ class CarPartStockDelegate {
     operator fun getValue(thisRef: FactoryState, property: KProperty<*>): Map<String, Int> {
 
         val partUsed = thisRef.journal
-            .filterIsInstance<CarBuilt>()
+            .filterIsInstance<CarProduced>()
             .flatMap { it.carPartPacks }
             .groupBy { it.name }
             .mapValues { it.value.sumOf { carPart -> carPart.quantity } }
 
         val partUnloaded = thisRef.journal
-            .filterIsInstance<CargoBayUnloaded>()
+            .filterIsInstance<ShipmentUnloadedFromCargoBay>()
             .flatMap { it.carPartPacks }
             .groupBy { it.name }
             .mapValues { it.value.sumOf { carPart -> carPart.quantity } }
@@ -25,7 +25,7 @@ class ShipmentWaitingToBeUnloadedDelegate {
             .fold(emptyList(), { acc, event ->
                 when (event) {
                     is ShipmentTransferredToCargoBay -> acc + listOf(event.carPartPacks)
-                    is CargoBayUnloaded -> emptyList()
+                    is ShipmentUnloadedFromCargoBay -> emptyList()
                     else -> acc
                 }
             })

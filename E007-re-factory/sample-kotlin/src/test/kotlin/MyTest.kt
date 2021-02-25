@@ -347,7 +347,7 @@ object MyTest : Spek({
             Then("Chewbacca unloaded the cargo bay") {
                 assertTrue {
                     factory.state.journal.contains(
-                        CargoBayUnloaded("Chewbacca", listOf(CarPartPack("chassis", 4)))
+                        ShipmentUnloadedFromCargoBay("Chewbacca", listOf(CarPartPack("chassis", 4)))
                     )
                 }
             }
@@ -381,7 +381,7 @@ object MyTest : Spek({
             Then("Chewbacca unloaded the cargo bay from 3 chassis, 2 wheels and 3 engines") {
                 assertTrue {
                     factory.state.journal.contains(
-                        CargoBayUnloaded(
+                        ShipmentUnloadedFromCargoBay(
                             "Chewbacca", listOf(
                                 CarPartPack("chassis", 4),
                                 CarPartPack("wheel", 2),
@@ -420,7 +420,7 @@ object MyTest : Spek({
             Then("Chewbacca unloaded the cargo bay from 4-chassis pack, 2 wheels-pack and 3-chassis pack") {
                 assertTrue {
                     factory.state.journal.contains(
-                        CargoBayUnloaded(
+                        ShipmentUnloadedFromCargoBay(
                             "Chewbacca", listOf(
                                 CarPartPack("chassis", 4),
                                 CarPartPack("wheel", 2),
@@ -481,7 +481,7 @@ object MyTest : Spek({
                                     CarPartPack("bits and pieces", 5)
                                 )
                             ),
-                            CargoBayUnloaded(
+                            ShipmentUnloadedFromCargoBay(
                                 "Yoda", listOf(
                                     CarPartPack("chassis", 3),
                                     CarPartPack("wheels", 5),
@@ -524,7 +524,7 @@ object MyTest : Spek({
                                     CarPartPack("bits and pieces", 5)
                                 )
                             ),
-                            CargoBayUnloaded(
+                            ShipmentUnloadedFromCargoBay(
                                 "Yoda", listOf(
                                     CarPartPack("chassis", 3),
                                     CarPartPack("wheels", 5),
@@ -568,7 +568,7 @@ object MyTest : Spek({
                                     CarPartPack("engine", 2),
                                 )
                             ),
-                            CargoBayUnloaded(
+                            ShipmentUnloadedFromCargoBay(
                                 "Yoda", listOf(
                                     CarPartPack("chassis", 3),
                                     CarPartPack("wheels", 5),
@@ -588,7 +588,7 @@ object MyTest : Spek({
             Then("Then a model T car is built") {
                 assertTrue {
                     factory.state.journal.contains(
-                        CarBuilt(
+                        CarProduced(
                             "Yoda",
                             CarModel.MODEL_T,
                             CarModel.neededParts(CarModel.MODEL_T)
@@ -613,7 +613,7 @@ object MyTest : Spek({
                                     CarPartPack("engine", 2),
                                 )
                             ),
-                            CargoBayUnloaded(
+                            ShipmentUnloadedFromCargoBay(
                                 "Yoda", listOf(
                                     CarPartPack("chassis", 3),
                                     CarPartPack("wheels", 5),
@@ -633,7 +633,7 @@ object MyTest : Spek({
             Then("Then a model V car is built") {
                 assertTrue {
                     factory.state.journal.contains(
-                        CarBuilt(
+                        CarProduced(
                             "Yoda",
                             CarModel.MODEL_V,
                             CarModel.neededParts(CarModel.MODEL_V)
@@ -659,7 +659,7 @@ object MyTest : Spek({
                                     CarPartPack("engine", 2),
                                 )
                             ),
-                            CargoBayUnloaded(
+                            ShipmentUnloadedFromCargoBay(
                                 "Yoda", listOf(
                                     CarPartPack("chassis", 3),
                                     CarPartPack("wheels", 5),
@@ -690,7 +690,7 @@ object MyTest : Spek({
             Then("Then a model T car is built") {
                 assertTrue {
                     factory.state.journal.contains(
-                        CarBuilt(
+                        CarProduced(
                             "Yoda",
                             CarModel.MODEL_T,
                             CarModel.neededParts(CarModel.MODEL_T)
@@ -738,7 +738,7 @@ object MyTest : Spek({
                                     CarPartPack("engine", 2),
                                 )
                             ),
-                            CargoBayUnloaded(
+                            ShipmentUnloadedFromCargoBay(
                                 "Yoda", listOf(
                                     CarPartPack("chassis", 3),
                                     CarPartPack("wheels", 5),
@@ -746,8 +746,8 @@ object MyTest : Spek({
                                     CarPartPack("engine", 2),
                                 )
                             ),
-                            CarBuilt("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
-                            CarBuilt("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
+                            CarProduced("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
+                            CarProduced("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
                         )
                     )
                 )
