@@ -1,6 +1,3 @@
-class FactoryAggregate(val state: FactoryState) {
-}
-
 fun produceCar(employeeName: String, carModel: CarModel, state: FactoryState): FactoryState {
     echoCommand("Order $employeeName to build a $carModel car")
 
@@ -122,11 +119,11 @@ private fun doRealWork(workName: String) {
     Thread.sleep(1000)
 }
 
-fun echoCommand(message: String) {
+private fun echoCommand(message: String) {
     println("?> Command: $message".yellow())
 }
 
-fun fail(message: String) {
+private fun fail(message: String) {
     println(":> $message".red())
     throw IllegalStateException(message)
 }
