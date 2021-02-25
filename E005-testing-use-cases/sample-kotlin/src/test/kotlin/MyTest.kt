@@ -6,6 +6,7 @@ object MyTest : Spek({
     lateinit var factory: FactoryAggregate
     lateinit var exceptions: MutableList<Throwable>
 
+    // Useful for debug
     //afterEachGroup { println(factory.state.journal) }
 
     Feature("Transferring shipment to cargo bay") {
@@ -638,6 +639,135 @@ object MyTest : Spek({
                             CarModel.neededParts(CarModel.MODEL_V)
                         )
                     )
+                }
+            }
+        }
+
+        Scenario("Order to build a model T car and checking the remaining parts") {
+            Given("Yoda and Luke assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines") {
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Yoda"),
+                            EmployeeAssignedToFactory("Luke"),
+                            ShipmentTransferredToCargoBay(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5),
+                                    CarPartPack("engine", 2),
+                                )
+                            ),
+                            CargoBayUnloaded(
+                                "Yoda", listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5),
+                                    CarPartPack("engine", 2),
+                                )
+                            )
+                        )
+                    )
+                )
+            }
+            And("Model T car requires 2 wheels, 1 engine, and 2 bits and pieces parts to produce") {
+
+            }
+            And("Model V car requires 1 chassis, 2 wheels, 1 engine and 2 bits and pieces parts to produce") {
+
+            }
+            When("Yoda is ordered to produce a model T car") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    factory.produceCar("Yoda", CarModel.MODEL_T)
+                }
+            }
+            When("Luke is ordered to produce a model V car") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    factory.produceCar("Luke", CarModel.MODEL_V)
+                }
+            }
+            Then("Then a model T car is built") {
+                assertTrue {
+                    factory.state.journal.contains(
+                        CarBuilt(
+                            "Yoda",
+                            CarModel.MODEL_T,
+                            CarModel.neededParts(CarModel.MODEL_T)
+                        )
+                    )
+                }
+            }
+            And("There is 2 chassis left") {
+                assertTrue {
+                    factory.state.stock.getOrDefault("chassis", 0) == 2
+                }
+            }
+
+            And("There is 1 wheels left") {
+                assertTrue {
+                    factory.state.stock.getOrDefault("wheels", 0) == 1
+                }
+            }
+
+            And("There is 1 bits and pieces left") {
+                assertTrue {
+                    factory.state.stock.getOrDefault("bits and pieces", 0) == 1
+                }
+            }
+
+            And("There is 0 engine left") {
+                assertTrue {
+                    factory.state.stock.getOrDefault("engine", 0) == 0
+                }
+            }
+        }
+
+        Scenario("Not enough stock to build a new car after some have already been built") {
+            Given("Yoda assigned to the factory, 3 chassis, 5 wheels 5 bits and pieces and 2 engines shipment transferred and unloaded and 2 model T cars built") {
+                factory = FactoryAggregate(
+                    FactoryState(
+                        listOf(
+                            EmployeeAssignedToFactory("Yoda"),
+                            ShipmentTransferredToCargoBay(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5),
+                                    CarPartPack("engine", 2),
+                                )
+                            ),
+                            CargoBayUnloaded(
+                                "Yoda", listOf(
+                                    CarPartPack("chassis", 3),
+                                    CarPartPack("wheels", 5),
+                                    CarPartPack("bits and pieces", 5),
+                                    CarPartPack("engine", 2),
+                                )
+                            ),
+                            CarBuilt("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
+                            CarBuilt("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
+                        )
+                    )
+                )
+            }
+            And("Model T car requires 2 wheels, 1 engine, and 2 bits and pieces parts to produce") {
+
+            }
+            When("Yoda is ordered to build a model T car") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    factory.produceCar("Yoda", CarModel.MODEL_T)
+                }
+            }
+            Then("There should be an error") {
+                assertTrue { exceptions.isNotEmpty() }
+            }
+            And("The error should contains the message \"There is not enough part to build ${CarModel.MODEL_T} car\" ") {
+                assertTrue {
+                    exceptions.any {
+                        it.message?.contains("There is not enough part to build ${CarModel.MODEL_T} car")!!
+                    }
                 }
             }
         }
