@@ -22,7 +22,7 @@ class FactoryState(journal: List<Event>) {
             })
     }
 
-    val stock: Map<String, Int> by lazy {
+    val inventory: Map<String, Int> by lazy {
         val partUsed = this.journal
             .filterIsInstance<CarProduced>()
             .flatMap { it.carPartPacks }

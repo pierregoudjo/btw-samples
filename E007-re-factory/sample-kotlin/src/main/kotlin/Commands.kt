@@ -9,7 +9,7 @@ fun produceCar(employeeName: String, carModel: CarModel, state: FactoryState): F
     val neededPartsToBuildTheCar = CarModel.neededParts(carModel)
 
     val isThereEnoughPartToBuildTheCar = neededPartsToBuildTheCar.fold(true,
-        { acc, curr -> acc && state.stock.getOrDefault(curr.name, 0) >= curr.quantity }
+        { acc, curr -> acc && state.inventory.getOrDefault(curr.name, 0) >= curr.quantity }
     )
 
     if (!isThereEnoughPartToBuildTheCar) {

@@ -692,25 +692,25 @@ object MyTest : Spek({
             }
             And("There is 2 chassis left") {
                 assertTrue {
-                    state.stock.getOrDefault("chassis", 0) == 2
+                    state.inventory.getOrDefault("chassis", 0) == 2
                 }
             }
 
             And("There is 1 wheels left") {
                 assertTrue {
-                    state.stock.getOrDefault("wheels", 0) == 1
+                    state.inventory.getOrDefault("wheels", 0) == 1
                 }
             }
 
             And("There is 1 bits and pieces left") {
                 assertTrue {
-                    state.stock.getOrDefault("bits and pieces", 0) == 1
+                    state.inventory.getOrDefault("bits and pieces", 0) == 1
                 }
             }
 
             And("There is 0 engine left") {
                 assertTrue {
-                    state.stock.getOrDefault("engine", 0) == 0
+                    state.inventory.getOrDefault("engine", 0) == 0
                 }
             }
         }
