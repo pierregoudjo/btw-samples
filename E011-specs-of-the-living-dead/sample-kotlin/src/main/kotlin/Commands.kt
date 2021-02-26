@@ -5,6 +5,10 @@ fun produceCar(employeeName: String, carModel: CarModel, state: FactoryState): F
         fail("$employeeName must be assigned to the factory to build a car")
     }
 
+    if (state.employeesWhoHasBuiltCars.contains(employeeName)) {
+        fail("$employeeName may only produce a car once a day")
+    }
+
     // CheckIfWeHaveEnoughSpareParts
     val neededPartsToBuildTheCar = CarModel.neededParts(carModel)
 
@@ -28,6 +32,10 @@ fun unloadShipmentFromCargoBay(employeeName: String, state: FactoryState): Facto
 
     if (!state.listOfEmployeeNames.contains(employeeName)) {
         fail("$employeeName must be assigned to the factory to unload the cargo bay")
+    }
+
+    if (state.employeeWhoHasUnloadedFromCargoBay.contains(employeeName)) {
+        fail("$employeeName may only unpack and inventory all Shipments in the CargoBay once a day")
     }
 
     if (state.shipmentsWaitingToBeUnloaded.isEmpty()) {

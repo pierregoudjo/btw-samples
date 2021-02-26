@@ -83,7 +83,7 @@ object MyTest : Spek({
                 val events = listOf(
                     EmployeeAssignedToFactory("Chewbacca"),
                     ShipmentTransferredToCargoBay("shipment-11", listOf(CarPartPack("engine", 3))),
-                    ShipmentTransferredToCargoBay("shipment-12", listOf(CarPartPack("wheels", 40)))
+                    ShipmentTransferredToCargoBay("shipment-12", listOf(CarPartPack("wheel", 40)))
                 )
                 state = FactoryState(events)
 
@@ -111,7 +111,7 @@ object MyTest : Spek({
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-55", listOf(CarPartPack("wheels", 5)))
+                        ShipmentTransferredToCargoBay("shipment-55", listOf(CarPartPack("wheel", 5)))
                     )
                 )
 
@@ -140,7 +140,7 @@ object MyTest : Spek({
             }
         }
 
-        Scenario("A shipment of 5 wheels and 7 engines comes to the factory") {
+        Scenario("A shipment of 5 wheels and 7 engines comes to the factory and the employee curse") {
             Given("A factory with an employee assigned and 1 shipment in the cargo bay") {
                 state = FactoryState(
                     listOf(
@@ -150,11 +150,11 @@ object MyTest : Spek({
                 )
 
             }
-            When("A shipment of 5 wheels and 7 engines comes to the factory") {
+            When("A shipment of 5 wheel and 7 engines comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
                     state = transferShipmentToCargoBay(
                         "shipment-56",
-                        listOf(CarPartPack("wheels", 5), CarPartPack("engines", 7)),
+                        listOf(CarPartPack("wheel", 5), CarPartPack("engines", 7)),
                         state
                     )
                 }
@@ -165,7 +165,7 @@ object MyTest : Spek({
                     state.journal.contains(
                         ShipmentTransferredToCargoBay(
                             "shipment-56",
-                            listOf(CarPartPack("wheels", 5), CarPartPack("engines", 7))
+                            listOf(CarPartPack("wheel", 5), CarPartPack("engines", 7))
                         )
                     )
                 }
@@ -297,7 +297,7 @@ object MyTest : Spek({
             }
         }
 
-        Scenario("No shipment to unload") {
+        Scenario("Thre must be at least 1 shipment to unload when the employee is ordered to unload the shipment fromthe cargo bay") {
 
             Given("Chewbacca assigned to the factory") {
                 state = FactoryState(
@@ -376,7 +376,7 @@ object MyTest : Spek({
 
             }
 
-            Then("Chewbacca unloaded the cargo bay from 3 chassis, 2 wheels and 3 engines") {
+            Then("Chewbacca unloaded the cargo bay from 3 chassis, 2 wheel and 3 engines") {
                 assertTrue {
                     state.journal.contains(
                         ShipmentUnloadedFromCargoBay(
@@ -429,6 +429,29 @@ object MyTest : Spek({
             }
         }
 
+        Scenario("An employee may unload from the cargo bay once a day") {
+            Given("Yoda already unload the cargo bay today") {
+                state = FactoryState(listOf(
+                    EmployeeAssignedToFactory("Yoda"),
+                    ShipmentTransferredToCargoBay("Yoda", listOf(CarPartPack("wheel", 5))),
+                    ShipmentUnloadedFromCargoBay("Yoda", listOf(CarPartPack("wheel", 5))),
+                    ShipmentTransferredToCargoBay("Yoda", listOf(CarPartPack("chassis", 2)))
+                ))
+            }
+
+            When("Yoda is ordered to unload shipment from the cargo bay") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    state = unloadShipmentFromCargoBay("Yoda", state)
+                }
+            }
+            Then("There should be an error") {
+                assertTrue { exceptions.isNotEmpty() }
+            }
+            And("The error message should contains \" Yoda may only unpack and inventory all Shipments in the CargoBay once a day \" ") {
+                assertTrue { exceptions.first().message?.contains("Yoda may only unpack and inventory all Shipments in the CargoBay once a day")!! }
+            }
+        }
+
     }
 
     Feature("Produce a car") {
@@ -473,14 +496,14 @@ object MyTest : Spek({
                             "shipment-1",
                             listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5)
                             )
                         ),
                         ShipmentUnloadedFromCargoBay(
                             "Yoda", listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5)
                             )
                         )
@@ -515,14 +538,14 @@ object MyTest : Spek({
                             "shipment-1",
                             listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5)
                             )
                         ),
                         ShipmentUnloadedFromCargoBay(
                             "Yoda", listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5)
                             )
                         )
@@ -535,7 +558,7 @@ object MyTest : Spek({
                     state = produceCar("Yoda", CarModel.MODEL_V, state)
                 }
             }
-            Then("Then should be an error") {
+            Then("There should be an error") {
                 assertTrue { exceptions.isNotEmpty() }
             }
 
@@ -557,7 +580,7 @@ object MyTest : Spek({
                             "shipment-1",
                             listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5),
                                 CarPartPack("engine", 2),
                             )
@@ -565,7 +588,7 @@ object MyTest : Spek({
                         ShipmentUnloadedFromCargoBay(
                             "Yoda", listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5),
                                 CarPartPack("engine", 2),
                             )
@@ -601,7 +624,7 @@ object MyTest : Spek({
                             "shipment-1",
                             listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5),
                                 CarPartPack("engine", 2),
                             )
@@ -609,7 +632,7 @@ object MyTest : Spek({
                         ShipmentUnloadedFromCargoBay(
                             "Yoda", listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5),
                                 CarPartPack("engine", 2),
                             )
@@ -646,7 +669,7 @@ object MyTest : Spek({
                             "shipment-1",
                             listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5),
                                 CarPartPack("engine", 2),
                             )
@@ -654,7 +677,7 @@ object MyTest : Spek({
                         ShipmentUnloadedFromCargoBay(
                             "Yoda", listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5),
                                 CarPartPack("engine", 2),
                             )
@@ -698,7 +721,7 @@ object MyTest : Spek({
 
             And("There is 1 wheels left") {
                 assertTrue {
-                    state.inventory.getOrDefault("wheels", 0) == 1
+                    state.inventory.getOrDefault("wheel", 0) == 1
                 }
             }
 
@@ -720,11 +743,13 @@ object MyTest : Spek({
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Yoda"),
+                        EmployeeAssignedToFactory("Luke"),
+                        EmployeeAssignedToFactory("Lea"),
                         ShipmentTransferredToCargoBay(
                             "shipment-1",
                             listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5),
                                 CarPartPack("engine", 2),
                             )
@@ -732,13 +757,13 @@ object MyTest : Spek({
                         ShipmentUnloadedFromCargoBay(
                             "Yoda", listOf(
                                 CarPartPack("chassis", 3),
-                                CarPartPack("wheels", 5),
+                                CarPartPack("wheel", 5),
                                 CarPartPack("bits and pieces", 5),
                                 CarPartPack("engine", 2),
                             )
                         ),
                         CarProduced("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
-                        CarProduced("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
+                        CarProduced("Luke", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
                     )
                 )
 
@@ -748,7 +773,7 @@ object MyTest : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Yoda", CarModel.MODEL_T, state)
+                    state = produceCar("Lea", CarModel.MODEL_T, state)
                 }
             }
             Then("There should be an error") {
@@ -760,6 +785,33 @@ object MyTest : Spek({
                         it.message?.contains("There is not enough part to build ${CarModel.MODEL_T} car")!!
                     }
                 }
+            }
+        }
+
+        Scenario("An employee may only produce a car once a day") {
+            Given("Yoda an employee of the factory who has already built a car today and enough part left on the shelf to build a model T car") {
+                state = FactoryState(
+                    listOf(
+                        EmployeeAssignedToFactory("Yoda"),
+                        ShipmentUnloadedFromCargoBay(
+                            "Yoda",
+                            listOf(CarPartPack("wheel", 60), CarPartPack("engine", 40), CarPartPack("bits and pieces", 20))
+                        ),
+                        CarProduced("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T))
+
+                    )
+                )
+            }
+            When("Yoda is ordered to build a car") {
+                runWithCatchAndAddToExceptionList(exceptions) {
+                    state = produceCar("Yoda", CarModel.MODEL_T, state)
+                }
+            }
+            Then("There should be an error ") {
+                assertTrue { exceptions.isNotEmpty() }
+            }
+            Then("The error should contains a message \"Yoda may only produce a car once a day\"") {
+                assertTrue { exceptions.first().message?.contains("Yoda may only produce a car once a day")!! }
             }
         }
     }

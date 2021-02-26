@@ -37,6 +37,18 @@ class FactoryState(journal: List<Event>) {
 
         partUnloaded.mapValues { it.value - partUsed.getOrDefault(it.key, 0)}
     }
+
+    val employeesWhoHasBuiltCars: List<String> by lazy {
+        this.journal
+            .filterIsInstance<CarProduced>()
+            .map { it.employeeName }
+    }
+
+    val employeeWhoHasUnloadedFromCargoBay: List<String> by lazy {
+        this.journal
+            .filterIsInstance<ShipmentUnloadedFromCargoBay>()
+            .map { it.employeeName }
+    }
 }
 
 fun apply(event: List<Event>, state: FactoryState): FactoryState {
