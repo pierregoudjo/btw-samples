@@ -58,6 +58,4 @@ enum class CarModel {
     }
 }
 
-class DomainError(val type: String, override val message: String) : Exception(message)
-
 data class CarPart(val name: String, val quantity: Int)
