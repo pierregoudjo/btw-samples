@@ -82,8 +82,8 @@ object MyTest : Spek({
             Given("There is an employee assigned to the factory and two shipments waiting in the cargo bay") {
                 val events = listOf(
                     EmployeeAssignedToFactory("Chewbacca"),
-                    ShipmentTransferredToCargoBay("shipment-11", listOf(CarPartPack("engine", 3))),
-                    ShipmentTransferredToCargoBay("shipment-12", listOf(CarPartPack("wheel", 40)))
+                    ShipmentTransferredToCargoBay("shipment-11", listOf(CarPart("engine", 3))),
+                    ShipmentTransferredToCargoBay("shipment-12", listOf(CarPart("wheel", 40)))
                 )
                 state = FactoryState(events)
 
@@ -91,7 +91,7 @@ object MyTest : Spek({
 
             When("A new shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = transferShipmentToCargoBay("shipment-13", listOf(CarPartPack("bmw6", 6)), state)
+                    state = transferShipmentToCargoBay("shipment-13", listOf(CarPart("bmw6", 6)), state)
                 }
             }
 
@@ -111,7 +111,7 @@ object MyTest : Spek({
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-55", listOf(CarPartPack("wheel", 5)))
+                        ShipmentTransferredToCargoBay("shipment-55", listOf(CarPart("wheel", 5)))
                     )
                 )
 
@@ -121,7 +121,7 @@ object MyTest : Spek({
                 runWithCatchAndAddToExceptionList(exceptions) {
                     state = transferShipmentToCargoBay(
                         "shipment-56",
-                        listOf(CarPartPack("engine", 6), CarPartPack("chassis", 2)),
+                        listOf(CarPart("engine", 6), CarPart("chassis", 2)),
                         state
                     )
                 }
@@ -133,7 +133,7 @@ object MyTest : Spek({
                     state.journal.contains(
                         ShipmentTransferredToCargoBay(
                             "shipment-56",
-                            listOf(CarPartPack("engine", 6), CarPartPack("chassis", 2))
+                            listOf(CarPart("engine", 6), CarPart("chassis", 2))
                         )
                     )
                 }
@@ -145,7 +145,7 @@ object MyTest : Spek({
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-58", listOf(CarPartPack("chassis", 3)))
+                        ShipmentTransferredToCargoBay("shipment-58", listOf(CarPart("chassis", 3)))
                     )
                 )
 
@@ -154,7 +154,7 @@ object MyTest : Spek({
                 runWithCatchAndAddToExceptionList(exceptions) {
                     state = transferShipmentToCargoBay(
                         "shipment-56",
-                        listOf(CarPartPack("wheel", 5), CarPartPack("engines", 7)),
+                        listOf(CarPart("wheel", 5), CarPart("engines", 7)),
                         state
                     )
                 }
@@ -165,7 +165,7 @@ object MyTest : Spek({
                     state.journal.contains(
                         ShipmentTransferredToCargoBay(
                             "shipment-56",
-                            listOf(CarPartPack("wheel", 5), CarPartPack("engines", 7))
+                            listOf(CarPart("wheel", 5), CarPart("engines", 7))
                         )
                     )
                 }
@@ -243,26 +243,26 @@ object MyTest : Spek({
         }
     }
 
-    Feature("Unload Shipment from the Cargo Bay") {
+    Feature("Unpack Shipments in the Cargo Bay") {
         beforeEachScenario {
             state = FactoryState(emptyList())
 
             exceptions = mutableListOf()
         }
 
-        Scenario("Order given non-assigned employee to the factory to unload the cargo bay") {
+        Scenario("Order given non-assigned employee to the factory to unpack shipments in the cargo bay") {
             Given("Chewbacca assigned to the factory and 1 shipment transferred in the cargo bay") {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4)))
+                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4)))
                     )
                 )
 
             }
-            When("There is an order given to Yoda to unload the cargo bay") {
+            When("There is an order given to Yoda to unpack shipments in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unloadShipmentFromCargoBay("Yoda", state)
+                    state = unpackAndInventoryShipmentInCargoBay("Yoda", state)
                 }
 
             }
@@ -274,18 +274,18 @@ object MyTest : Spek({
             }
         }
 
-        Scenario("No employee assigned to the factory to unload the cargo bay") {
-            Given("No employee assigned to the factory and 1 shipment transferred in the cargo bay") {
+        Scenario("No employee assigned to the factory to unpack the cargo bay") {
+            Given("No employee assigned to the factory and 1 shipment transferred to the cargo bay") {
                 state = FactoryState(
                     listOf(
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4)))
+                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4)))
                     )
                 )
 
             }
-            When("There is an order given to Yoda to unload the cargo bay") {
+            When("There is an order given to Yoda to unpack shipments in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unloadShipmentFromCargoBay("Yoda", state)
+                    state = unpackAndInventoryShipmentInCargoBay("Yoda", state)
                 }
 
             }
@@ -297,7 +297,7 @@ object MyTest : Spek({
             }
         }
 
-        Scenario("Thre must be at least 1 shipment to unload when the employee is ordered to unload the shipment fromthe cargo bay") {
+        Scenario("There must be at least 1 shipment in the cargo bay when the employee is ordered to unpack the shipments in the cargo bay") {
 
             Given("Chewbacca assigned to the factory") {
                 state = FactoryState(
@@ -308,9 +308,9 @@ object MyTest : Spek({
 
             }
 
-            When("There is an order given to Chewbacca to unload the cargo bay") {
+            When("There is an order given to Chewbacca to unpack shipments in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unloadShipmentFromCargoBay("Chewbacca", state)
+                    state = unpackAndInventoryShipmentInCargoBay("Chewbacca", state)
                 }
 
             }
@@ -319,49 +319,49 @@ object MyTest : Spek({
                 assertTrue { exceptions.isNotEmpty() }
             }
 
-            And("The error should contains \"Yoda must be assigned to the factory\"") {
-                assertTrue { exceptions.any { it.message?.contains("There should be a shipment to unload")!! } }
+            And("The error should contains \"There should be a shipment to unpack\"") {
+                assertTrue { exceptions.any { it.message?.contains("There should be a shipment to unpack")!! } }
             }
         }
 
-        Scenario("Order an assigned employee to unload a shipment from the cargo bay") {
+        Scenario("Order an assigned employee to unpack a shipment in the cargo bay") {
 
-            Given("Chewbacca assigned to the factory and there is a shipment of 4 chassis in the cargo bay") {
+            Given("Chewbacca assigned to the factory and there is a shipment of 4 chassis transferred to the cargo bay") {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4)))
+                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4)))
                     )
                 )
 
             }
 
-            When("There is an order given to Chewbacca to unload the cargo bay") {
+            When("There is an order given to Chewbacca to unpack the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unloadShipmentFromCargoBay("Chewbacca", state)
+                    state = unpackAndInventoryShipmentInCargoBay("Chewbacca", state)
                 }
 
             }
 
-            Then("Chewbacca unloaded the cargo bay") {
+            Then("Chewbacca unpacked shipment in the cargo bay") {
                 assertTrue {
                     state.journal.contains(
-                        ShipmentUnloadedFromCargoBay("Chewbacca", listOf(CarPartPack("chassis", 4)))
+                        ShipmentUnpackedInCargoBay("Chewbacca", listOf(CarPart("chassis", 4)))
                     )
                 }
             }
         }
 
-        Scenario("Order an assigned employee to unload two shipments from the cargo bay") {
+        Scenario("Order an assigned employee to unpack two shipments in the cargo bay") {
 
             Given("Chewbacca assigned to the factory and there is a shipment of 4 chassis and another shipment of 2 wheels and 3 engines in the cargo bay") {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4))),
+                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4))),
                         ShipmentTransferredToCargoBay(
                             "shipment-1",
-                            listOf(CarPartPack("wheel", 2), CarPartPack("engine", 3))
+                            listOf(CarPart("wheel", 2), CarPart("engine", 3))
                         ),
 
                         )
@@ -369,21 +369,21 @@ object MyTest : Spek({
 
             }
 
-            When("There is an order given to Chewbacca to unload the cargo bay") {
+            When("There is an order given to Chewbacca to unpack shipment the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unloadShipmentFromCargoBay("Chewbacca", state)
+                    state = unpackAndInventoryShipmentInCargoBay("Chewbacca", state)
                 }
 
             }
 
-            Then("Chewbacca unloaded the cargo bay from 3 chassis, 2 wheel and 3 engines") {
+            Then("Chewbacca unpack 3 chassis, 2 wheel and 3 engines") {
                 assertTrue {
                     state.journal.contains(
-                        ShipmentUnloadedFromCargoBay(
+                        ShipmentUnpackedInCargoBay(
                             "Chewbacca", listOf(
-                                CarPartPack("chassis", 4),
-                                CarPartPack("wheel", 2),
-                                CarPartPack("engine", 3),
+                                CarPart("chassis", 4),
+                                CarPart("wheel", 2),
+                                CarPart("engine", 3),
                             )
                         )
                     )
@@ -391,37 +391,37 @@ object MyTest : Spek({
             }
         }
 
-        Scenario("Order an assigned employee to unload two shipments with common items from the cargo bay") {
+        Scenario("Order an assigned employee to unpack two shipments with common items from the cargo bay") {
 
             Given("Chewbacca assigned to the factory and there is a shipment of 4 chassis and another shipment of 2 wheels and 3 chassis in the cargo bay") {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPartPack("chassis", 4))),
+                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4))),
                         ShipmentTransferredToCargoBay(
                             "shipment-1",
-                            listOf(CarPartPack("wheel", 2), CarPartPack("chassis", 3))
+                            listOf(CarPart("wheel", 2), CarPart("chassis", 3))
                         ),
                     )
                 )
 
             }
 
-            When("There is an order given to Chewbacca to unload the cargo bay") {
+            When("There is an order given to Chewbacca to unpack shipment in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unloadShipmentFromCargoBay("Chewbacca", state)
+                    state = unpackAndInventoryShipmentInCargoBay("Chewbacca", state)
                 }
 
             }
 
-            Then("Chewbacca unloaded the cargo bay from 4-chassis pack, 2 wheels-pack and 3-chassis pack") {
+            Then("Chewbacca unpacked the cargo bay with a 4-chassis pack, 2 wheels-pack and 3-chassis pack") {
                 assertTrue {
                     state.journal.contains(
-                        ShipmentUnloadedFromCargoBay(
+                        ShipmentUnpackedInCargoBay(
                             "Chewbacca", listOf(
-                                CarPartPack("chassis", 4),
-                                CarPartPack("wheel", 2),
-                                CarPartPack("chassis", 3),
+                                CarPart("chassis", 4),
+                                CarPart("wheel", 2),
+                                CarPart("chassis", 3),
                             )
                         )
                     )
@@ -429,19 +429,19 @@ object MyTest : Spek({
             }
         }
 
-        Scenario("An employee may unload from the cargo bay once a day") {
-            Given("Yoda already unload the cargo bay today") {
+        Scenario("An employee may unpack shipments in the cargo bay once a day") {
+            Given("Yoda already unpack shipments the cargo bay today") {
                 state = FactoryState(listOf(
                     EmployeeAssignedToFactory("Yoda"),
-                    ShipmentTransferredToCargoBay("Yoda", listOf(CarPartPack("wheel", 5))),
-                    ShipmentUnloadedFromCargoBay("Yoda", listOf(CarPartPack("wheel", 5))),
-                    ShipmentTransferredToCargoBay("Yoda", listOf(CarPartPack("chassis", 2)))
+                    ShipmentTransferredToCargoBay("Yoda", listOf(CarPart("wheel", 5))),
+                    ShipmentUnpackedInCargoBay("Yoda", listOf(CarPart("wheel", 5))),
+                    ShipmentTransferredToCargoBay("Yoda", listOf(CarPart("chassis", 2)))
                 ))
             }
 
-            When("Yoda is ordered to unload shipment from the cargo bay") {
+            When("Yoda is ordered to unpack the shipment in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unloadShipmentFromCargoBay("Yoda", state)
+                    state = unpackAndInventoryShipmentInCargoBay("Yoda", state)
                 }
             }
             Then("There should be an error") {
@@ -495,16 +495,16 @@ object MyTest : Spek({
                         ShipmentTransferredToCargoBay(
                             "shipment-1",
                             listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5)
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5)
                             )
                         ),
-                        ShipmentUnloadedFromCargoBay(
+                        ShipmentUnpackedInCargoBay(
                             "Yoda", listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5)
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5)
                             )
                         )
                     )
@@ -537,16 +537,16 @@ object MyTest : Spek({
                         ShipmentTransferredToCargoBay(
                             "shipment-1",
                             listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5)
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5)
                             )
                         ),
-                        ShipmentUnloadedFromCargoBay(
+                        ShipmentUnpackedInCargoBay(
                             "Yoda", listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5)
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5)
                             )
                         )
                     )
@@ -579,18 +579,18 @@ object MyTest : Spek({
                         ShipmentTransferredToCargoBay(
                             "shipment-1",
                             listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5),
-                                CarPartPack("engine", 2),
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5),
+                                CarPart("engine", 2),
                             )
                         ),
-                        ShipmentUnloadedFromCargoBay(
+                        ShipmentUnpackedInCargoBay(
                             "Yoda", listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5),
-                                CarPartPack("engine", 2),
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5),
+                                CarPart("engine", 2),
                             )
                         )
                     )
@@ -623,18 +623,18 @@ object MyTest : Spek({
                         ShipmentTransferredToCargoBay(
                             "shipment-1",
                             listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5),
-                                CarPartPack("engine", 2),
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5),
+                                CarPart("engine", 2),
                             )
                         ),
-                        ShipmentUnloadedFromCargoBay(
+                        ShipmentUnpackedInCargoBay(
                             "Yoda", listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5),
-                                CarPartPack("engine", 2),
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5),
+                                CarPart("engine", 2),
                             )
                         )
                     )
@@ -668,18 +668,18 @@ object MyTest : Spek({
                         ShipmentTransferredToCargoBay(
                             "shipment-1",
                             listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5),
-                                CarPartPack("engine", 2),
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5),
+                                CarPart("engine", 2),
                             )
                         ),
-                        ShipmentUnloadedFromCargoBay(
+                        ShipmentUnpackedInCargoBay(
                             "Yoda", listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5),
-                                CarPartPack("engine", 2),
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5),
+                                CarPart("engine", 2),
                             )
                         )
                     )
@@ -739,7 +739,7 @@ object MyTest : Spek({
         }
 
         Scenario("Not enough stock to build a new car after some have already been built") {
-            Given("Yoda assigned to the factory, 3 chassis, 5 wheels 5 bits and pieces and 2 engines shipment transferred and unloaded and 2 model T cars built") {
+            Given("Yoda assigned to the factory, 3 chassis, 5 wheels 5 bits and pieces and 2 engines shipment transferred and unpacked and 2 model T cars built") {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Yoda"),
@@ -748,18 +748,18 @@ object MyTest : Spek({
                         ShipmentTransferredToCargoBay(
                             "shipment-1",
                             listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5),
-                                CarPartPack("engine", 2),
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5),
+                                CarPart("engine", 2),
                             )
                         ),
-                        ShipmentUnloadedFromCargoBay(
+                        ShipmentUnpackedInCargoBay(
                             "Yoda", listOf(
-                                CarPartPack("chassis", 3),
-                                CarPartPack("wheel", 5),
-                                CarPartPack("bits and pieces", 5),
-                                CarPartPack("engine", 2),
+                                CarPart("chassis", 3),
+                                CarPart("wheel", 5),
+                                CarPart("bits and pieces", 5),
+                                CarPart("engine", 2),
                             )
                         ),
                         CarProduced("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
@@ -793,9 +793,9 @@ object MyTest : Spek({
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory("Yoda"),
-                        ShipmentUnloadedFromCargoBay(
+                        ShipmentUnpackedInCargoBay(
                             "Yoda",
-                            listOf(CarPartPack("wheel", 60), CarPartPack("engine", 40), CarPartPack("bits and pieces", 20))
+                            listOf(CarPart("wheel", 60), CarPart("engine", 40), CarPart("bits and pieces", 20))
                         ),
                         CarProduced("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T))
 

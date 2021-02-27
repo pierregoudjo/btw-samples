@@ -27,27 +27,27 @@ fun produceCar(employeeName: String, carModel: CarModel, state: FactoryState): F
     return recordThat(listOf(CarProduced(employeeName, carModel, neededPartsToBuildTheCar)), state)
 }
 
-fun unloadShipmentFromCargoBay(employeeName: String, state: FactoryState): FactoryState {
-    echoCommand("Order $employeeName to unload shipment from cargo bay")
+fun unpackAndInventoryShipmentInCargoBay(employeeName: String, state: FactoryState): FactoryState {
+    echoCommand("Order $employeeName to unpack shipments from cargo bay")
 
     if (!state.listOfEmployeeNames.contains(employeeName)) {
-        fail("$employeeName must be assigned to the factory to unload the cargo bay")
+        fail("$employeeName must be assigned to the factory to unpack the cargo bay")
     }
 
-    if (state.employeeWhoHasUnloadedFromCargoBay.contains(employeeName)) {
+    if (state.employeeWhoHasUnpackedShipmentsInCargoBayToday.contains(employeeName)) {
         fail("$employeeName may only unpack and inventory all Shipments in the CargoBay once a day")
     }
 
-    if (state.shipmentsWaitingToBeUnloaded.isEmpty()) {
-        fail("There should be a shipment to unload")
+    if (state.shipmentsWaitingToBeUnpacked.isEmpty()) {
+        fail("There should be a shipment to unpack")
     }
 
     doRealWork("passing supplies")
 
     return recordThat(
-        listOf(ShipmentUnloadedFromCargoBay(
+        listOf(ShipmentUnpackedInCargoBay(
             employeeName,
-            state.shipmentsWaitingToBeUnloaded.flatten()
+            state.shipmentsWaitingToBeUnpacked.flatten()
         )),
         state
     )
@@ -73,24 +73,24 @@ fun assignEmployeeToFactory(employeeName: String, state: FactoryState): FactoryS
     return recordThat(listOf(EmployeeAssignedToFactory(employeeName)), state)
 }
 
-fun transferShipmentToCargoBay(shipmentName: String, partPacks: List<CarPartPack>, state: FactoryState): FactoryState {
+fun transferShipmentToCargoBay(shipmentName: String, parts: List<CarPart>, state: FactoryState): FactoryState {
     echoCommand("transfer shipment to cargo")
 
     if (state.listOfEmployeeNames.isEmpty()) {
         fail("there has to be somebody at the factory in order to accept the shipment")
     }
 
-    if (partPacks.isEmpty()) {
+    if (parts.isEmpty()) {
         fail("Empty shipments are not accepted!")
     }
 
-    if (state.shipmentsWaitingToBeUnloaded.size >= 2) {
+    if (state.shipmentsWaitingToBeUnpacked.size >= 2) {
         fail("More than two shipments can't fit into this cargo bay")
     }
     doRealWork("opening cargo bay doors")
-    val transferredEvent = listOf(ShipmentTransferredToCargoBay(shipmentName = shipmentName, carPartPacks = partPacks))
+    val transferredEvent = listOf(ShipmentTransferredToCargoBay(shipmentName = shipmentName, carParts = parts))
 
-    val totalCountOfParts = partPacks.sumOf { it.quantity }
+    val totalCountOfParts = parts.sumOf { it.quantity }
 
 
     val curseWordEvent = when {

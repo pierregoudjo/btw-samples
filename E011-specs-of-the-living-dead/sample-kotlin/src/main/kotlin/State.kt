@@ -11,31 +11,31 @@ class FactoryState(journal: List<Event>) {
     }
 
 
-    val shipmentsWaitingToBeUnloaded: List<List<CarPartPack>> by lazy {
+    val shipmentsWaitingToBeUnpacked: List<List<CarPart>> by lazy {
         this.journal
             .fold(emptyList(), { acc, event ->
                 when (event) {
-                    is ShipmentTransferredToCargoBay -> acc + listOf(event.carPartPacks)
-                    is ShipmentUnloadedFromCargoBay -> emptyList()
+                    is ShipmentTransferredToCargoBay -> acc + listOf(event.carParts)
+                    is ShipmentUnpackedInCargoBay -> emptyList()
                     else -> acc
                 }
             })
     }
 
     val inventory: Map<String, Int> by lazy {
-        val partUsed = this.journal
+        val partsUsed = this.journal
             .filterIsInstance<CarProduced>()
-            .flatMap { it.carPartPacks }
+            .flatMap { it.carParts }
             .groupBy { it.name }
             .mapValues { it.value.sumOf { carPart -> carPart.quantity } }
 
-        val partUnloaded = this.journal
-            .filterIsInstance<ShipmentUnloadedFromCargoBay>()
-            .flatMap { it.carPartPacks }
+        val partsUnpacked = this.journal
+            .filterIsInstance<ShipmentUnpackedInCargoBay>()
+            .flatMap { it.carParts }
             .groupBy { it.name }
             .mapValues { it.value.sumOf { carPart -> carPart.quantity } }
 
-        partUnloaded.mapValues { it.value - partUsed.getOrDefault(it.key, 0)}
+        partsUnpacked.mapValues { it.value - partsUsed.getOrDefault(it.key, 0)}
     }
 
     val employeesWhoHasBuiltCars: List<String> by lazy {
@@ -44,9 +44,9 @@ class FactoryState(journal: List<Event>) {
             .map { it.employeeName }
     }
 
-    val employeeWhoHasUnloadedFromCargoBay: List<String> by lazy {
+    val employeeWhoHasUnpackedShipmentsInCargoBayToday: List<String> by lazy {
         this.journal
-            .filterIsInstance<ShipmentUnloadedFromCargoBay>()
+            .filterIsInstance<ShipmentUnpackedInCargoBay>()
             .map { it.employeeName }
     }
 }

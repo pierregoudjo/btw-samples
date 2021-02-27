@@ -4,9 +4,9 @@ data class CurseWordUttered(val theWord: String, val meaning: String) : Event {
 
 }
 
-data class ShipmentTransferredToCargoBay(val shipmentName: String, val carPartPacks: List<CarPartPack>) : Event {
+data class ShipmentTransferredToCargoBay(val shipmentName: String, val carParts: List<CarPart>) : Event {
     override fun toString() =
-        "Shipment '$shipmentName' transferred to cargo bay: " + carPartPacks.map { "${it.name} ${it.quantity} pcs" }
+        "Shipment '$shipmentName' transferred to cargo bay: " + carParts.map { "${it.name} ${it.quantity} pcs" }
             .reduce { acc, s -> "$acc, $s" }
 
 }
@@ -16,14 +16,14 @@ data class EmployeeAssignedToFactory(val employeeName: String) : Event {
         "new worker joins our forces: '$employeeName'"
 }
 
-data class ShipmentUnloadedFromCargoBay(val employeeName: String, val carPartPacks: List<CarPartPack>) : Event {
+data class ShipmentUnpackedInCargoBay(val employeeName: String, val carParts: List<CarPart>) : Event {
     override fun toString() =
-        "$employeeName unloaded " + carPartPacks.map { "${it.name} ${it.quantity} pcs" }.reduce { acc, s -> "$acc, $s" }
+        "$employeeName unpacked " + carParts.map { "${it.name} ${it.quantity} pcs" }.reduce { acc, s -> "$acc, $s" }
 }
 
-data class CarProduced(val employeeName: String, val carModel: CarModel, val carPartPacks: List<CarPartPack>) : Event {
+data class CarProduced(val employeeName: String, val carModel: CarModel, val carParts: List<CarPart>) : Event {
     override fun toString() =
-        "Car $carModel built by $employeeName using " + carPartPacks.map { "${it.name} ${it.quantity} pcs" }
+        "Car $carModel built by $employeeName using " + carParts.map { "${it.name} ${it.quantity} pcs" }
             .reduce { acc, s -> "$acc, $s" }
 }
 
@@ -44,18 +44,18 @@ enum class CarModel {
         fun neededParts(model: CarModel) =
             when (model) {
                 MODEL_T -> listOf(
-                    CarPartPack("wheel", 2),
-                    CarPartPack("engine", 1),
-                    CarPartPack("bits and pieces", 2)
+                    CarPart("wheel", 2),
+                    CarPart("engine", 1),
+                    CarPart("bits and pieces", 2)
                 )
                 MODEL_V -> listOf(
-                    CarPartPack("wheel", 2),
-                    CarPartPack("engine", 1),
-                    CarPartPack("bits and pieces", 2),
-                    CarPartPack("chassis", 1)
+                    CarPart("wheel", 2),
+                    CarPart("engine", 1),
+                    CarPart("bits and pieces", 2),
+                    CarPart("chassis", 1)
                 )
             }
     }
 }
 
-data class CarPartPack(val name: String, val quantity: Int)
+data class CarPart(val name: String, val quantity: Int)
