@@ -2,11 +2,11 @@ fun produceCar(employeeName: String, carModel: CarModel, state: FactoryState): F
     echoCommand("Order $employeeName to build a $carModel car")
 
     if (!state.listOfEmployeeNames.contains(employeeName)) {
-        fail("$employeeName must be assigned to the factory to build a car")
+        fail("$employeeName must be assigned to the factory to build a car", "unknown-employee")
     }
 
     if (state.employeesWhoHasBuiltCars.contains(employeeName)) {
-        fail("$employeeName may only produce a car once a day")
+        fail("$employeeName may only produce a car once a day", "quota-reached")
     }
 
     // CheckIfWeHaveEnoughSpareParts
@@ -17,7 +17,7 @@ fun produceCar(employeeName: String, carModel: CarModel, state: FactoryState): F
     )
 
     if (!isThereEnoughPartToBuildTheCar) {
-        fail("There is not enough part to build $carModel car")
+        fail("There is not enough part to build $carModel car", "part-not-found")
     }
 
     doRealWork("Building the car...")
@@ -31,15 +31,15 @@ fun unpackAndInventoryShipmentInCargoBay(employeeName: String, state: FactorySta
     echoCommand("Order $employeeName to unpack shipments from cargo bay")
 
     if (!state.listOfEmployeeNames.contains(employeeName)) {
-        fail("$employeeName must be assigned to the factory to unpack the cargo bay")
+        fail("$employeeName must be assigned to the factory to unpack the cargo bay", "unknown-employee")
     }
 
     if (state.employeeWhoHasUnpackedShipmentsInCargoBayToday.contains(employeeName)) {
-        fail("$employeeName may only unpack and inventory all Shipments in the CargoBay once a day")
+        fail("$employeeName may only unpack and inventory all Shipments in the CargoBay once a day", "quota-reached")
     }
 
     if (state.shipmentsWaitingToBeUnpacked.isEmpty()) {
-        fail("There should be a shipment to unpack")
+        fail("There should be a shipment to unpack", "empty-inventoryShipments")
     }
 
     doRealWork("passing supplies")
@@ -58,7 +58,7 @@ fun assignEmployeeToFactory(employeeName: String, state: FactoryState): FactoryS
 
     // Hey look, a business rule implementation
     if (state.listOfEmployeeNames.contains(employeeName)) {
-        fail("the name of $employeeName only one can have")
+        fail("the name of $employeeName only one can have", "more-than-1")
     }
     // another check that needs to happen when assigning employees to the factory
     // multiple options to prove this critical business rule:
@@ -66,7 +66,7 @@ fun assignEmployeeToFactory(employeeName: String, state: FactoryState): FactoryS
     // Bender Bending Rodríguez: http://en.wikipedia.org/wiki/Bender_(Futurama)
 
     if (employeeName == "Bender") {
-        fail("Guys with the name 'bender' are trouble")
+        fail("Guys with the name 'bender' are trouble", "bender-employee")
     }
 
     doPaperWork("Assign employee to the factory")
@@ -77,15 +77,15 @@ fun transferShipmentToCargoBay(shipmentName: String, parts: List<CarPart>, state
     echoCommand("transfer shipment to cargo")
 
     if (state.listOfEmployeeNames.isEmpty()) {
-        fail("there has to be somebody at the factory in order to accept the shipment")
+        fail("there has to be somebody at the factory in order to accept the shipment", "no-employee")
     }
 
     if (parts.isEmpty()) {
-        fail("Empty shipments are not accepted!")
+        fail("Empty shipments are not accepted!", "empty-InventoryShipment")
     }
 
     if (state.shipmentsWaitingToBeUnpacked.size >= 2) {
-        fail("More than two shipments can't fit into this cargo bay")
+        fail("More than two shipments can't fit into this cargo bay", "more-than-two-InventoryShipments")
     }
     doRealWork("opening cargo bay doors")
     val transferredEvent = listOf(ShipmentTransferredToCargoBay(shipmentName = shipmentName, carParts = parts))
@@ -131,9 +131,9 @@ private fun echoCommand(message: String) {
     println("?> Command: $message".yellow())
 }
 
-private fun fail(message: String) {
+private fun fail(message: String, type: String = "untyped-error") {
     println(":> $message".red())
-    throw IllegalStateException(message)
+    throw DomainError(type, message)
 }
 
 fun String.red() = "\u001B[41m$this\u001B[0m"
