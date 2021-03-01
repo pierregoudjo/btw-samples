@@ -45,10 +45,12 @@ fun unpackAndInventoryShipmentInCargoBay(employeeName: String, state: FactorySta
     doRealWork("passing supplies")
 
     return recordThat(
-        listOf(ShipmentUnpackedInCargoBay(
-            employeeName,
-            state.shipmentsWaitingToBeUnpacked.flatten()
-        )),
+        listOf(
+            ShipmentUnpackedInCargoBay(
+                employeeName,
+                state.shipmentsWaitingToBeUnpacked.flatten()
+            )
+        ),
         state
     )
 }
@@ -73,6 +75,8 @@ fun assignEmployeeToFactory(employeeName: String, state: FactoryState): FactoryS
     return recordThat(listOf(EmployeeAssignedToFactory(employeeName)), state)
 }
 
+private const val NUMBER_OF_PARTS_TOO_MUCH_TO_HANDLE = 10
+
 fun transferShipmentToCargoBay(shipmentName: String, parts: List<CarPart>, state: FactoryState): FactoryState {
     echoCommand("transfer shipment to cargo")
 
@@ -92,13 +96,13 @@ fun transferShipmentToCargoBay(shipmentName: String, parts: List<CarPart>, state
 
     val totalCountOfParts = parts.sumOf { it.quantity }
 
-
     val curseWordEvent = when {
-        (totalCountOfParts > 10) -> listOf(
-        CurseWordUttered(
-            theWord = "Boltov tebe v korobky peredach",
-            meaning = "awe in the face of the amount of parts delivered"
-        ))
+        (totalCountOfParts > NUMBER_OF_PARTS_TOO_MUCH_TO_HANDLE) -> listOf(
+            CurseWordUttered(
+                theWord = "Boltov tebe v korobky peredach",
+                meaning = "awe in the face of the amount of parts delivered"
+            )
+        )
         else -> emptyList()
     }
 
@@ -116,26 +120,3 @@ private fun recordThat(events: List<Event>, state: FactoryState): FactoryState {
 private fun announceInsideFactory(event: Event) {
     println("!> Event $event".green())
 }
-
-private fun doPaperWork(workName: String) {
-    println(" > Work: Papers... $workName ...")
-    Thread.sleep(1000)
-}
-
-private fun doRealWork(workName: String) {
-    println(" > Work: heavy stuff... $workName ...")
-    Thread.sleep(1000)
-}
-
-private fun echoCommand(message: String) {
-    println("?> Command: $message".yellow())
-}
-
-private fun fail(message: String) {
-    println(":> $message".red())
-    throw IllegalStateException(message)
-}
-
-fun String.red() = "\u001B[41m$this\u001B[0m"
-fun String.green() = "\u001B[32m$this\u001B[0m"
-fun String.yellow() = "\u001B[33m$this\u001B[0m"

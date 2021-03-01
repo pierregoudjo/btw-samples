@@ -10,7 +10,6 @@ class FactoryState(journal: List<Event>) {
             .fold(emptyList(), { acc, event -> acc + event.employeeName })
     }
 
-
     val shipmentsWaitingToBeUnpacked: List<List<CarPart>> by lazy {
         this.journal
             .fold(emptyList(), { acc, event ->
@@ -35,7 +34,7 @@ class FactoryState(journal: List<Event>) {
             .groupBy { it.name }
             .mapValues { it.value.sumOf { carPart -> carPart.quantity } }
 
-        partsUnpacked.mapValues { it.value - partsUsed.getOrDefault(it.key, 0)}
+        partsUnpacked.mapValues { it.value - partsUsed.getOrDefault(it.key, 0) }
     }
 
     val employeesWhoHasBuiltCars: List<String> by lazy {

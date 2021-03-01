@@ -1,14 +1,12 @@
 data class CurseWordUttered(val theWord: String, val meaning: String) : Event {
     override fun toString() =
         "'$theWord' was heard within the walls. It meant: '$meaning'"
-
 }
 
 data class ShipmentTransferredToCargoBay(val shipmentName: String, val carParts: List<CarPart>) : Event {
     override fun toString() =
         "Shipment '$shipmentName' transferred to cargo bay: " + carParts.map { "${it.name} ${it.quantity} pcs" }
             .reduce { acc, s -> "$acc, $s" }
-
 }
 
 data class EmployeeAssignedToFactory(val employeeName: String) : Event {
