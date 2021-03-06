@@ -18,13 +18,13 @@ object TransferringShipmentToCargoBay : Spek({
 
         Scenario("An empty shipment comes to the cargo bay") {
             Given("An employee 'Yoda' assigned to the factory") {
-                val events = listOf(EmployeeAssignedToFactory("Yoda"))
+                val events = listOf(EmployeeAssignedToFactory(Employee("Yoda")))
                 state = FactoryState(events)
             }
 
             When("An empty shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = transferShipmentToCargoBay("some shipment", emptyList(), state)
+                    state = transferShipmentToCargoBay(Shipment("some shipment", emptyList()), state)
                 }
             }
 
@@ -42,7 +42,7 @@ object TransferringShipmentToCargoBay : Spek({
             }
             When("An empty shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = transferShipmentToCargoBay("some shipment", emptyList(), state)
+                    state = transferShipmentToCargoBay(Shipment("some shipment", emptyList()), state)
                 }
             }
 
@@ -69,7 +69,7 @@ object TransferringShipmentToCargoBay : Spek({
 
             When("An empty shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = transferShipmentToCargoBay("some shipment", emptyList(), state)
+                    state = transferShipmentToCargoBay(Shipment("some shipment", emptyList()), state)
                 }
             }
 
@@ -94,9 +94,9 @@ object TransferringShipmentToCargoBay : Spek({
 
             Given("There is an employee assigned to the factory and two shipments waiting in the cargo bay") {
                 val events = listOf(
-                    EmployeeAssignedToFactory("Chewbacca"),
-                    ShipmentTransferredToCargoBay("shipment-11", listOf(CarPart("engine", 3))),
-                    ShipmentTransferredToCargoBay("shipment-12", listOf(CarPart("wheel", 40)))
+                    EmployeeAssignedToFactory(Employee("Chewbacca")),
+                    ShipmentTransferredToCargoBay(Shipment("shipment-11", listOf(CarPartPackage(CarPart("engine"), 3)))),
+                    ShipmentTransferredToCargoBay(Shipment("shipment-12", listOf(CarPartPackage(CarPart("wheel"), 40))))
                 )
                 state = FactoryState(events)
 
@@ -104,7 +104,7 @@ object TransferringShipmentToCargoBay : Spek({
 
             When("A new shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = transferShipmentToCargoBay("shipment-13", listOf(CarPart("bmw6", 6)), state)
+                    state = transferShipmentToCargoBay(Shipment("shipment-13", listOf(CarPartPackage(CarPart("bmw6"), 6))), state)
                 }
             }
 
@@ -123,8 +123,8 @@ object TransferringShipmentToCargoBay : Spek({
             Given("A factory with an employee assigned and 1 shipment in the cargo bay") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-55", listOf(CarPart("wheel", 5)))
+                        EmployeeAssignedToFactory(Employee("Chewbacca")),
+                        ShipmentTransferredToCargoBay(Shipment("shipment-55", listOf(CarPartPackage(CarPart("wheel"), 5))))
                     )
                 )
 
@@ -133,8 +133,8 @@ object TransferringShipmentToCargoBay : Spek({
             When("A shipment comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
                     state = transferShipmentToCargoBay(
-                        "shipment-56",
-                        listOf(CarPart("engine", 6), CarPart("chassis", 2)),
+                        Shipment("shipment-56",
+                        listOf(CarPartPackage(CarPart("engine"), 6), CarPartPackage(CarPart("chassis"), 2))),
                         state
                     )
                 }
@@ -145,9 +145,9 @@ object TransferringShipmentToCargoBay : Spek({
                 assertTrue {
                     state.journal.contains(
                         ShipmentTransferredToCargoBay(
-                            "shipment-56",
-                            listOf(CarPart("engine", 6), CarPart("chassis", 2))
-                        )
+                            Shipment("shipment-56",
+                            listOf(CarPartPackage(CarPart("engine"), 6), CarPartPackage(CarPart("chassis"), 2))
+                        ))
                     )
                 }
             }
@@ -157,8 +157,8 @@ object TransferringShipmentToCargoBay : Spek({
             Given("A factory with an employee assigned and 1 shipment in the cargo bay") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-58", listOf(CarPart("chassis", 3)))
+                        EmployeeAssignedToFactory(Employee("Chewbacca")),
+                        ShipmentTransferredToCargoBay(Shipment("shipment-58", listOf(CarPartPackage(CarPart("chassis"), 3))))
                     )
                 )
 
@@ -166,8 +166,8 @@ object TransferringShipmentToCargoBay : Spek({
             When("A shipment of 5 wheel and 7 engines comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
                     state = transferShipmentToCargoBay(
-                        "shipment-56",
-                        listOf(CarPart("wheel", 5), CarPart("engines", 7)),
+                        Shipment("shipment-56",
+                        listOf(CarPartPackage(CarPart("wheel"), 5), CarPartPackage(CarPart("engines"), 7))),
                         state
                     )
                 }
@@ -177,9 +177,9 @@ object TransferringShipmentToCargoBay : Spek({
                 assertTrue {
                     state.journal.contains(
                         ShipmentTransferredToCargoBay(
-                            "shipment-56",
-                            listOf(CarPart("wheel", 5), CarPart("engines", 7))
-                        )
+                            Shipment("shipment-56",
+                            listOf(CarPartPackage(CarPart("wheel"), 5), CarPartPackage(CarPart("engines"), 7))
+                        ))
                     )
                 }
             }

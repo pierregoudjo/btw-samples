@@ -16,25 +16,25 @@ object AssignEmployeeToTheFactoryFeature : Spek({
             }
             When("An employee named \"Fry\" comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = assignEmployeeToFactory("Fry", state)
+                    state = assignEmployeeToFactory(Employee("Fry"), state)
                 }
             }
             Then("Fry is assigned to the factory") {
                 assertTrue {
-                    state.journal.contains(EmployeeAssignedToFactory("Fry"))
+                    state.journal.contains(EmployeeAssignedToFactory(Employee("Fry")))
                 }
             }
         }
 
         Scenario("An already assigned employee is assigned again") {
             Given("A factory where an employee named \"Fry\" is assigned") {
-                state = FactoryState(listOf(EmployeeAssignedToFactory("Fry")))
+                state = FactoryState(listOf(EmployeeAssignedToFactory(Employee("Fry"))))
 
             }
 
             When("An employee named \"Fry\" comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = assignEmployeeToFactory("Fry", state)
+                    state = assignEmployeeToFactory(Employee("Fry"), state)
                 }
             }
 
@@ -54,7 +54,7 @@ object AssignEmployeeToTheFactoryFeature : Spek({
             }
             When("An employee named Bender is assigned to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = assignEmployeeToFactory("Bender", state)
+                    state = assignEmployeeToFactory(Employee("Bender"), state)
                 }
             }
 

@@ -1,27 +1,27 @@
-data class CurseWordUttered(val theWord: String, val meaning: String) : Event {
+data class CurseWordUttered(val curse: Curse) : Event {
     override fun toString() =
-        "'$theWord' was heard within the walls. It meant: '$meaning'"
+        "'${curse.theWord}' was heard within the walls. It meant: '${curse.meaning}'"
 }
 
-data class ShipmentTransferredToCargoBay(val shipmentName: String, val carParts: List<CarPart>) : Event {
+data class ShipmentTransferredToCargoBay(val shipment: Shipment) : Event {
     override fun toString() =
-        "Shipment '$shipmentName' transferred to cargo bay: " + carParts.map { "${it.name} ${it.quantity} pcs" }
+        "Shipment '$shipment' transferred to cargo bay: " + shipment.carPartPackages.map { "${it.part} ${it.quantity} pcs" }
             .reduce { acc, s -> "$acc, $s" }
 }
 
-data class EmployeeAssignedToFactory(val employeeName: String) : Event {
+data class EmployeeAssignedToFactory(val employee: Employee) : Event {
     override fun toString() =
-        "new worker joins our forces: '$employeeName'"
+        "new worker joins our forces: '$employee'"
 }
 
-data class ShipmentUnpackedInCargoBay(val employeeName: String, val carParts: List<CarPart>) : Event {
+data class ShipmentUnpackedInCargoBay(val employee: Employee, val carPartPackages: CarPartPackages) : Event {
     override fun toString() =
-        "$employeeName unpacked " + carParts.map { "${it.name} ${it.quantity} pcs" }.reduce { acc, s -> "$acc, $s" }
+        "$employee unpacked " + carPartPackages.map { "${it.part} ${it.quantity} pcs" }.reduce { acc, s -> "$acc, $s" }
 }
 
-data class CarProduced(val employeeName: String, val carModel: CarModel, val carParts: List<CarPart>) : Event {
+data class CarProduced(val employee: Employee, val carModel: CarModel, val carPartPackages: CarPartPackages) : Event {
     override fun toString() =
-        "Car $carModel built by $employeeName using " + carParts.map { "${it.name} ${it.quantity} pcs" }
+        "Car $carModel built by $employee using " + carPartPackages.map { "${it.part} ${it.quantity} pcs" }
             .reduce { acc, s -> "$acc, $s" }
 }
 
@@ -42,18 +42,38 @@ enum class CarModel {
         fun neededParts(model: CarModel) =
             when (model) {
                 MODEL_T -> listOf(
-                    CarPart("wheel", 2),
-                    CarPart("engine", 1),
-                    CarPart("bits and pieces", 2)
+                    CarPartPackage(CarPart("wheel"), 2),
+                    CarPartPackage(CarPart("engine"), 1),
+                    CarPartPackage(CarPart("bits and pieces"), 2)
                 )
                 MODEL_V -> listOf(
-                    CarPart("wheel", 2),
-                    CarPart("engine", 1),
-                    CarPart("bits and pieces", 2),
-                    CarPart("chassis", 1)
+                    CarPartPackage(CarPart("wheel"), 2),
+                    CarPartPackage(CarPart("engine"), 1),
+                    CarPartPackage(CarPart("bits and pieces"), 2),
+                    CarPartPackage(CarPart("chassis"), 1)
                 )
             }
     }
 }
 
-data class CarPart(val name: String, val quantity: Int)
+inline class CarPart(val name: String)
+data class CarPartPackage(val part: CarPart, val quantity: Int)
+data class Curse(val theWord: String, val meaning: String)
+
+typealias Events = List<Event>
+typealias Employees = List<Employee>
+typealias CarPartPackages = List<CarPartPackage>
+typealias Shipments = List<Shipment>
+typealias Inventory = Map<CarPart, Int>
+
+inline class Employee(private val employeeName: String) {
+    override fun toString(): String {
+        return employeeName
+    }
+}
+
+data class Shipment(val name: String, val carPartPackages: CarPartPackages) {
+    override fun toString(): String {
+        return name
+    }
+}

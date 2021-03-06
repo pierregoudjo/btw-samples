@@ -16,15 +16,15 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             Given("Chewbacca assigned to the factory and 1 shipment transferred in the cargo bay") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4)))
+                        EmployeeAssignedToFactory(Employee("Chewbacca")),
+                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4))))
                     )
                 )
 
             }
             When("There is an order given to Yoda to unpack shipments in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay("Yoda", state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Yoda"), state)
                 }
 
             }
@@ -40,14 +40,14 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             Given("No employee assigned to the factory and 1 shipment transferred to the cargo bay") {
                 state = FactoryState(
                     listOf(
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4)))
+                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4))))
                     )
                 )
 
             }
             When("There is an order given to Yoda to unpack shipments in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay("Yoda", state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Yoda"), state)
                 }
 
             }
@@ -67,7 +67,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             Given("Chewbacca assigned to the factory") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
+                        EmployeeAssignedToFactory(Employee("Chewbacca")),
                     )
                 )
 
@@ -75,7 +75,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
 
             When("There is an order given to Chewbacca to unpack shipments in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay("Chewbacca", state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"), state)
                 }
 
             }
@@ -96,8 +96,8 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             ) {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4)))
+                        EmployeeAssignedToFactory(Employee("Chewbacca")),
+                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4))))
                     )
                 )
 
@@ -105,7 +105,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
 
             When("There is an order given to Chewbacca to unpack the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay("Chewbacca", state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"), state)
                 }
 
             }
@@ -113,7 +113,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             Then("Chewbacca unpacked shipment in the cargo bay") {
                 assertTrue {
                     state.journal.contains(
-                        ShipmentUnpackedInCargoBay("Chewbacca", listOf(CarPart("chassis", 4)))
+                        ShipmentUnpackedInCargoBay(Employee("Chewbacca"), listOf(CarPartPackage(CarPart("chassis"), 4)))
                     )
                 }
             }
@@ -127,11 +127,11 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             ) {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4))),
+                        EmployeeAssignedToFactory(Employee("Chewbacca")),
+                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4)))),
                         ShipmentTransferredToCargoBay(
-                            "shipment-1",
-                            listOf(CarPart("wheel", 2), CarPart("engine", 3))
+                            Shipment("shipment-1",
+                            listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("engine"), 3)))
                         ),
 
                         )
@@ -141,7 +141,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
 
             When("There is an order given to Chewbacca to unpack shipment the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay("Chewbacca", state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"), state)
                 }
 
             }
@@ -150,10 +150,10 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
                 assertTrue {
                     state.journal.contains(
                         ShipmentUnpackedInCargoBay(
-                            "Chewbacca", listOf(
-                                CarPart("chassis", 4),
-                                CarPart("wheel", 2),
-                                CarPart("engine", 3),
+                            Employee("Chewbacca"), listOf(
+                                CarPartPackage(CarPart("chassis"), 4),
+                                CarPartPackage(CarPart("wheel"), 2),
+                                CarPartPackage(CarPart("engine"), 3),
                             )
                         )
                     )
@@ -169,11 +169,11 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             ) {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Chewbacca"),
-                        ShipmentTransferredToCargoBay("shipment-1", listOf(CarPart("chassis", 4))),
+                        EmployeeAssignedToFactory(Employee("Chewbacca")),
+                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4)))),
                         ShipmentTransferredToCargoBay(
-                            "shipment-1",
-                            listOf(CarPart("wheel", 2), CarPart("chassis", 3))
+                            Shipment("shipment-1",
+                            listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("chassis"), 3)))
                         ),
                     )
                 )
@@ -182,7 +182,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
 
             When("There is an order given to Chewbacca to unpack shipment in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay("Chewbacca", state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"), state)
                 }
 
             }
@@ -191,10 +191,10 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
                 assertTrue {
                     state.journal.contains(
                         ShipmentUnpackedInCargoBay(
-                            "Chewbacca", listOf(
-                                CarPart("chassis", 4),
-                                CarPart("wheel", 2),
-                                CarPart("chassis", 3),
+                            Employee("Chewbacca"), listOf(
+                                CarPartPackage(CarPart("chassis"), 4),
+                                CarPartPackage(CarPart("wheel"), 2),
+                                CarPartPackage(CarPart("chassis"), 3),
                             )
                         )
                     )
@@ -206,17 +206,17 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             Given("Yoda already unpack shipments the cargo bay today") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Yoda"),
-                        ShipmentTransferredToCargoBay("Yoda", listOf(CarPart("wheel", 5))),
-                        ShipmentUnpackedInCargoBay("Yoda", listOf(CarPart("wheel", 5))),
-                        ShipmentTransferredToCargoBay("Yoda", listOf(CarPart("chassis", 2)))
+                        EmployeeAssignedToFactory(Employee("Yoda")),
+                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("wheel"), 5)))),
+                        ShipmentUnpackedInCargoBay(Employee("Yoda"), listOf(CarPartPackage(CarPart("wheel"), 5))),
+                        ShipmentTransferredToCargoBay(Shipment("shipment-2", listOf(CarPartPackage(CarPart("chassis"), 2))))
                     )
                 )
             }
 
             When("Yoda is ordered to unpack the shipment in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay("Yoda", state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Yoda"), state)
                 }
             }
             Then("There should be an error") {

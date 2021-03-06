@@ -16,14 +16,14 @@ object ProduceACarFeature : Spek({
             Given("Yoda assigned to the factory") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Yoda")
+                        EmployeeAssignedToFactory(Employee("Yoda"))
                     )
                 )
 
             }
             When("Order given to Chewbacca to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Chewbacca", CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Chewbacca"), CarModel.MODEL_T, state)
                 }
             }
             Then("There should be an error") {
@@ -42,20 +42,20 @@ object ProduceACarFeature : Spek({
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels and 5 bits and pieces") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Yoda"),
+                        EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentTransferredToCargoBay(
-                            "shipment-1",
+                            Shipment("shipment-1",
                             listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5)
-                            )
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5)
+                            ))
                         ),
                         ShipmentUnpackedInCargoBay(
-                            "Yoda", listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5)
+                            Employee("Yoda"), listOf(
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5)
                             )
                         )
                     )
@@ -64,7 +64,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Yoda", CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T, state)
                 }
             }
             Then("Then should be an error") {
@@ -87,20 +87,20 @@ object ProduceACarFeature : Spek({
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels and 5 bits and pieces") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Yoda"),
+                        EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentTransferredToCargoBay(
-                            "shipment-1",
+                            Shipment("shipment-1",
                             listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5)
-                            )
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5)
+                            ))
                         ),
                         ShipmentUnpackedInCargoBay(
-                            "Yoda", listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5)
+                            Employee("Yoda"), listOf(
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5)
                             )
                         )
                     )
@@ -109,7 +109,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Yoda", CarModel.MODEL_V, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_V, state)
                 }
             }
             Then("There should be an error") {
@@ -132,22 +132,22 @@ object ProduceACarFeature : Spek({
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Yoda"),
+                        EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentTransferredToCargoBay(
-                            "shipment-1",
+                            Shipment("shipment-1",
                             listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5),
-                                CarPart("engine", 2),
-                            )
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5),
+                                CarPartPackage(CarPart("engine"), 2),
+                            ))
                         ),
                         ShipmentUnpackedInCargoBay(
-                            "Yoda", listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5),
-                                CarPart("engine", 2),
+                            Employee("Yoda"), listOf(
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5),
+                                CarPartPackage(CarPart("engine"), 2),
                             )
                         )
                     )
@@ -156,14 +156,14 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Yoda", CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T, state)
                 }
             }
             Then("Then a model T car is built") {
                 assertTrue {
                     state.journal.contains(
                         CarProduced(
-                            "Yoda",
+                            Employee("Yoda"),
                             CarModel.MODEL_T,
                             CarModel.neededParts(CarModel.MODEL_T)
                         )
@@ -176,22 +176,22 @@ object ProduceACarFeature : Spek({
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines") {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Yoda"),
+                        EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentTransferredToCargoBay(
-                            "shipment-1",
+                            Shipment("shipment-1",
                             listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5),
-                                CarPart("engine", 2),
-                            )
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5),
+                                CarPartPackage(CarPart("engine"), 2),
+                            ))
                         ),
                         ShipmentUnpackedInCargoBay(
-                            "Yoda", listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5),
-                                CarPart("engine", 2),
+                            Employee("Yoda"), listOf(
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5),
+                                CarPartPackage(CarPart("engine"), 2),
                             )
                         )
                     )
@@ -200,14 +200,14 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to produce a model V car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Yoda", CarModel.MODEL_V, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_V, state)
                 }
             }
             Then("Then a model V car is built") {
                 assertTrue {
                     state.journal.contains(
                         CarProduced(
-                            "Yoda",
+                            Employee("Yoda"),
                             CarModel.MODEL_V,
                             CarModel.neededParts(CarModel.MODEL_V)
                         )
@@ -222,23 +222,23 @@ object ProduceACarFeature : Spek({
             ) {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Yoda"),
-                        EmployeeAssignedToFactory("Luke"),
+                        EmployeeAssignedToFactory(Employee("Yoda")),
+                        EmployeeAssignedToFactory(Employee("Luke")),
                         ShipmentTransferredToCargoBay(
-                            "shipment-1",
+                            Shipment("shipment-1",
                             listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5),
-                                CarPart("engine", 2),
-                            )
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5),
+                                CarPartPackage(CarPart("engine"), 2),
+                            ))
                         ),
                         ShipmentUnpackedInCargoBay(
-                            "Yoda", listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5),
-                                CarPart("engine", 2),
+                            Employee("Yoda"), listOf(
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5),
+                                CarPartPackage(CarPart("engine"), 2),
                             )
                         )
                     )
@@ -253,19 +253,19 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Yoda", CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T, state)
                 }
             }
             When("Luke is ordered to produce a model V car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Luke", CarModel.MODEL_V, state)
+                    state = produceCar(Employee("Luke"), CarModel.MODEL_V, state)
                 }
             }
             Then("Then a model T car is built") {
                 assertTrue {
                     state.journal.contains(
                         CarProduced(
-                            "Yoda",
+                            Employee("Yoda"),
                             CarModel.MODEL_T,
                             CarModel.neededParts(CarModel.MODEL_T)
                         )
@@ -274,25 +274,25 @@ object ProduceACarFeature : Spek({
             }
             And("There is 2 chassis left") {
                 assertTrue {
-                    state.inventory.getOrDefault("chassis", 0) == 2
+                    state.inventory.getOrDefault(CarPart("chassis"), 0) == 2
                 }
             }
 
             And("There is 1 wheels left") {
                 assertTrue {
-                    state.inventory.getOrDefault("wheel", 0) == 1
+                    state.inventory.getOrDefault(CarPart("wheel"), 0) == 1
                 }
             }
 
             And("There is 1 bits and pieces left") {
                 assertTrue {
-                    state.inventory.getOrDefault("bits and pieces", 0) == 1
+                    state.inventory.getOrDefault(CarPart("bits and pieces"), 0) == 1
                 }
             }
 
             And("There is 0 engine left") {
                 assertTrue {
-                    state.inventory.getOrDefault("engine", 0) == 0
+                    state.inventory.getOrDefault(CarPart("engine"), 0) == 0
                 }
             }
         }
@@ -304,28 +304,28 @@ object ProduceACarFeature : Spek({
             ) {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Yoda"),
-                        EmployeeAssignedToFactory("Luke"),
-                        EmployeeAssignedToFactory("Lea"),
+                        EmployeeAssignedToFactory(Employee("Yoda")),
+                        EmployeeAssignedToFactory(Employee("Luke")),
+                        EmployeeAssignedToFactory(Employee("Lea")),
                         ShipmentTransferredToCargoBay(
-                            "shipment-1",
+                            Shipment("shipment-1",
                             listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5),
-                                CarPart("engine", 2),
-                            )
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5),
+                                CarPartPackage(CarPart("engine"), 2),
+                            ))
                         ),
                         ShipmentUnpackedInCargoBay(
-                            "Yoda", listOf(
-                                CarPart("chassis", 3),
-                                CarPart("wheel", 5),
-                                CarPart("bits and pieces", 5),
-                                CarPart("engine", 2),
+                            Employee("Yoda"), listOf(
+                                CarPartPackage(CarPart("chassis"), 3),
+                                CarPartPackage(CarPart("wheel"), 5),
+                                CarPartPackage(CarPart("bits and pieces"), 5),
+                                CarPartPackage(CarPart("engine"), 2),
                             )
                         ),
-                        CarProduced("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
-                        CarProduced("Luke", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
+                        CarProduced(Employee("Yoda"), CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
+                        CarProduced(Employee("Luke"), CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T)),
                     )
                 )
 
@@ -335,7 +335,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Lea", CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Lea"), CarModel.MODEL_T, state)
                 }
             }
             Then("There should be an error") {
@@ -359,19 +359,19 @@ object ProduceACarFeature : Spek({
             ) {
                 state = FactoryState(
                     listOf(
-                        EmployeeAssignedToFactory("Yoda"),
+                        EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentUnpackedInCargoBay(
-                            "Yoda",
-                            listOf(CarPart("wheel", 60), CarPart("engine", 40), CarPart("bits and pieces", 20))
+                            Employee("Yoda"),
+                            listOf(CarPartPackage(CarPart("wheel"), 60), CarPartPackage(CarPart("engine"), 40), CarPartPackage(CarPart("bits and pieces"), 20))
                         ),
-                        CarProduced("Yoda", CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T))
+                        CarProduced(Employee("Yoda"), CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T))
 
                     )
                 )
             }
             When("Yoda is ordered to build a car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar("Yoda", CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T, state)
                 }
             }
             Then("There should be an error ") {
