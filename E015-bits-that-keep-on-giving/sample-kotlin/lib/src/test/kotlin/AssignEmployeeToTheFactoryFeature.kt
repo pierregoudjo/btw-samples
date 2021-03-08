@@ -16,7 +16,7 @@ object AssignEmployeeToTheFactoryFeature : Spek({
             }
             When("An employee named \"Fry\" comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = assignEmployeeToFactory(Employee("Fry"), state)
+                    state = assignEmployeeToFactory(Employee("Fry"))(state)
                 }
             }
             Then("Fry is assigned to the factory") {
@@ -34,7 +34,7 @@ object AssignEmployeeToTheFactoryFeature : Spek({
 
             When("An employee named \"Fry\" comes to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = assignEmployeeToFactory(Employee("Fry"), state)
+                    state = assignEmployeeToFactory(Employee("Fry"))(state)
                 }
             }
 
@@ -54,7 +54,7 @@ object AssignEmployeeToTheFactoryFeature : Spek({
             }
             When("An employee named Bender is assigned to the factory") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = assignEmployeeToFactory(Employee("Bender"), state)
+                    state = assignEmployeeToFactory(Employee("Bender"))(state)
                 }
             }
 

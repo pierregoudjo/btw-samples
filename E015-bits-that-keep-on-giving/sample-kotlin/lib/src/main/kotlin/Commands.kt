@@ -1,4 +1,6 @@
-fun produceCar(employee: Employee, carModel: CarModel, state: FactoryState): FactoryState {
+typealias Command = (FactoryState) -> FactoryState
+
+fun produceCar(employee: Employee, carModel: CarModel): Command = { state ->
     echoCommand("Order $employee to build a $carModel car")
 
     if (!state.listOfEmployeeNames.contains(employee)) {
@@ -24,10 +26,10 @@ fun produceCar(employee: Employee, carModel: CarModel, state: FactoryState): Fac
 
     doPaperWork("Writing car specification documents")
 
-    return recordThat(listOf(CarProduced(employee, carModel, neededPartsToBuildTheCar)), state)
+    recordThat(listOf(CarProduced(employee, carModel, neededPartsToBuildTheCar)), state)
 }
 
-fun unpackAndInventoryShipmentInCargoBay(employee: Employee, state: FactoryState): FactoryState {
+fun unpackAndInventoryShipmentInCargoBay(employee: Employee): Command = { state ->
     echoCommand("Order $employee to unpack shipments from cargo bay")
 
     if (!state.listOfEmployeeNames.contains(employee)) {
@@ -44,7 +46,7 @@ fun unpackAndInventoryShipmentInCargoBay(employee: Employee, state: FactoryState
 
     doRealWork("passing supplies")
 
-    return recordThat(
+    recordThat(
         listOf(
             ShipmentUnpackedInCargoBay(
                 employee,
@@ -55,7 +57,7 @@ fun unpackAndInventoryShipmentInCargoBay(employee: Employee, state: FactoryState
     )
 }
 
-fun assignEmployeeToFactory(employee: Employee, state: FactoryState): FactoryState {
+fun assignEmployeeToFactory(employee: Employee): Command = { state ->
     echoCommand("assign employee $employee to the factory")
 
     // Hey look, a business rule implementation
@@ -72,12 +74,12 @@ fun assignEmployeeToFactory(employee: Employee, state: FactoryState): FactorySta
     }
 
     doPaperWork("Assign employee to the factory")
-    return recordThat(listOf(EmployeeAssignedToFactory(employee)), state)
+    recordThat(listOf(EmployeeAssignedToFactory(employee)), state)
 }
 
 private const val NUMBER_OF_PARTS_TOO_MUCH_TO_HANDLE = 10
 
-fun transferShipmentToCargoBay(shipment: Shipment, state: FactoryState): FactoryState {
+fun transferShipmentToCargoBay(shipment: Shipment): Command = { state ->
     echoCommand("transfer shipment to cargo")
 
     if (state.listOfEmployeeNames.isEmpty()) {
@@ -108,7 +110,7 @@ fun transferShipmentToCargoBay(shipment: Shipment, state: FactoryState): Factory
         else -> emptyList()
     }
 
-    return recordThat(transferredEvent + curseWordEvent, state)
+    recordThat(transferredEvent + curseWordEvent, state)
 }
 
 private fun recordThat(events: Events, state: FactoryState): FactoryState {

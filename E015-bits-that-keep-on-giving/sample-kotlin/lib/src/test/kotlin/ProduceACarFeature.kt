@@ -23,7 +23,7 @@ object ProduceACarFeature : Spek({
             }
             When("Order given to Chewbacca to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Chewbacca"), CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Chewbacca"), CarModel.MODEL_T) (state)
                 }
             }
             Then("There should be an error") {
@@ -64,7 +64,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
                 }
             }
             Then("Then should be an error") {
@@ -109,7 +109,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_V, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_V)(state)
                 }
             }
             Then("There should be an error") {
@@ -156,7 +156,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
                 }
             }
             Then("Then a model T car is built") {
@@ -200,7 +200,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to produce a model V car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_V, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_V)(state)
                 }
             }
             Then("Then a model V car is built") {
@@ -253,12 +253,12 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
                 }
             }
             When("Luke is ordered to produce a model V car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Luke"), CarModel.MODEL_V, state)
+                    state = produceCar(Employee("Luke"), CarModel.MODEL_V)(state)
                 }
             }
             Then("Then a model T car is built") {
@@ -335,7 +335,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to build a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Lea"), CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Lea"), CarModel.MODEL_T)(state)
                 }
             }
             Then("There should be an error") {
@@ -371,7 +371,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to build a car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T, state)
+                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
                 }
             }
             Then("There should be an error ") {

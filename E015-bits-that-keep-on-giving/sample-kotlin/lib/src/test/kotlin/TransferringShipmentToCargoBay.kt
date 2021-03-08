@@ -24,7 +24,7 @@ object TransferringShipmentToCargoBay : Spek({
 
             When("An empty shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = transferShipmentToCargoBay(Shipment("some shipment", emptyList()), state)
+                    state = transferShipmentToCargoBay(Shipment("some shipment", emptyList()))(state)
                 }
             }
 
@@ -42,7 +42,7 @@ object TransferringShipmentToCargoBay : Spek({
             }
             When("An empty shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = transferShipmentToCargoBay(Shipment("some shipment", emptyList()), state)
+                    state = transferShipmentToCargoBay(Shipment("some shipment", emptyList()))(state)
                 }
             }
 
@@ -69,7 +69,7 @@ object TransferringShipmentToCargoBay : Spek({
 
             When("An empty shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = transferShipmentToCargoBay(Shipment("some shipment", emptyList()), state)
+                    state = transferShipmentToCargoBay(Shipment("some shipment", emptyList()))(state)
                 }
             }
 
@@ -104,7 +104,7 @@ object TransferringShipmentToCargoBay : Spek({
 
             When("A new shipment comes to the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = transferShipmentToCargoBay(Shipment("shipment-13", listOf(CarPartPackage(CarPart("bmw6"), 6))), state)
+                    state = transferShipmentToCargoBay(Shipment("shipment-13", listOf(CarPartPackage(CarPart("bmw6"), 6))))(state)
                 }
             }
 
@@ -134,9 +134,7 @@ object TransferringShipmentToCargoBay : Spek({
                 runWithCatchAndAddToExceptionList(exceptions) {
                     state = transferShipmentToCargoBay(
                         Shipment("shipment-56",
-                        listOf(CarPartPackage(CarPart("engine"), 6), CarPartPackage(CarPart("chassis"), 2))),
-                        state
-                    )
+                        listOf(CarPartPackage(CarPart("engine"), 6), CarPartPackage(CarPart("chassis"), 2))))(state)
                 }
 
             }
@@ -167,9 +165,7 @@ object TransferringShipmentToCargoBay : Spek({
                 runWithCatchAndAddToExceptionList(exceptions) {
                     state = transferShipmentToCargoBay(
                         Shipment("shipment-56",
-                        listOf(CarPartPackage(CarPart("wheel"), 5), CarPartPackage(CarPart("engines"), 7))),
-                        state
-                    )
+                        listOf(CarPartPackage(CarPart("wheel"), 5), CarPartPackage(CarPart("engines"), 7))))(state)
                 }
 
             }

@@ -24,7 +24,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             }
             When("There is an order given to Yoda to unpack shipments in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay(Employee("Yoda"), state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Yoda"))(state)
                 }
 
             }
@@ -47,7 +47,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             }
             When("There is an order given to Yoda to unpack shipments in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay(Employee("Yoda"), state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Yoda"))(state)
                 }
 
             }
@@ -75,7 +75,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
 
             When("There is an order given to Chewbacca to unpack shipments in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"), state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"))(state)
                 }
 
             }
@@ -105,7 +105,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
 
             When("There is an order given to Chewbacca to unpack the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"), state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"))(state)
                 }
 
             }
@@ -141,7 +141,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
 
             When("There is an order given to Chewbacca to unpack shipment the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"), state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"))(state)
                 }
 
             }
@@ -182,7 +182,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
 
             When("There is an order given to Chewbacca to unpack shipment in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"), state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"))(state)
                 }
 
             }
@@ -216,7 +216,7 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
 
             When("Yoda is ordered to unpack the shipment in the cargo bay") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = unpackAndInventoryShipmentInCargoBay(Employee("Yoda"), state)
+                    state = unpackAndInventoryShipmentInCargoBay(Employee("Yoda"))(state)
                 }
             }
             Then("There should be an error") {
