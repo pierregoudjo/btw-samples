@@ -1,12 +1,10 @@
 const val SLEEP_DURATION: Long = 1000
 fun doPaperWork(workName: String) {
     println(" > Work: Papers... $workName ...")
-    Thread.sleep(SLEEP_DURATION)
 }
 
 fun doRealWork(workName: String) {
     println(" > Work: heavy stuff... $workName ...")
-    Thread.sleep(SLEEP_DURATION)
 }
 
 fun echoCommand(message: String) {
