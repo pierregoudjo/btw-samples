@@ -1,6 +1,9 @@
+import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldHaveSingleElement
+import io.kotest.matchers.shouldNot
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
-import kotlin.test.assertTrue
 
 object UnpackShipmentInTheCargoBayFeature : Spek({
     lateinit var exceptions: MutableList<Throwable>
@@ -34,10 +37,12 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
             }
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
             And("The error should contains \"Yoda must be assigned to the factory\"") {
-                assertTrue { exceptions.any { it.message?.contains("Yoda must be assigned to the factory")!! } }
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains("Yoda must be assigned to the factory")!!
+                }
             }
         }
 
@@ -62,10 +67,10 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
             }
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
             And("The error should contains \"Yoda must be assigned to the factory\"") {
-                assertTrue { exceptions.any { it.message?.contains("Yoda must be assigned to the factory")!! } }
+                exceptions shouldHaveSingleElement { it.message?.contains("Yoda must be assigned to the factory")!! }
             }
         }
 
@@ -91,11 +96,11 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
 
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
 
             And("The error should contains \"There should be a shipment to unpack\"") {
-                assertTrue { exceptions.any { it.message?.contains("There should be a shipment to unpack")!! } }
+                exceptions shouldHaveSingleElement { it.message?.contains("There should be a shipment to unpack")!! }
             }
         }
 
@@ -126,11 +131,10 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
 
             Then("Chewbacca unpacked shipment in the cargo bay") {
-                assertTrue {
-                    state.journal.contains(
-                        ShipmentUnpackedInCargoBay(Employee("Chewbacca"), listOf(CarPartPackage(CarPart("chassis"), 4)))
-                    )
-                }
+                state.journal shouldContain ShipmentUnpackedInCargoBay(
+                    Employee("Chewbacca"),
+                    listOf(CarPartPackage(CarPart("chassis"), 4))
+                )
             }
         }
 
@@ -169,17 +173,13 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
 
             Then("Chewbacca unpack 3 chassis, 2 wheel and 3 engines") {
-                assertTrue {
-                    state.journal.contains(
-                        ShipmentUnpackedInCargoBay(
-                            Employee("Chewbacca"), listOf(
-                                CarPartPackage(CarPart("chassis"), 4),
-                                CarPartPackage(CarPart("wheel"), 2),
-                                CarPartPackage(CarPart("engine"), 3),
-                            )
-                        )
+                state.journal shouldContain ShipmentUnpackedInCargoBay(
+                    Employee("Chewbacca"), listOf(
+                        CarPartPackage(CarPart("chassis"), 4),
+                        CarPartPackage(CarPart("wheel"), 2),
+                        CarPartPackage(CarPart("engine"), 3),
                     )
-                }
+                )
             }
         }
 
@@ -217,17 +217,13 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
 
             Then("Chewbacca unpacked the cargo bay with a 4-chassis pack, 2 wheels-pack and 3-chassis pack") {
-                assertTrue {
-                    state.journal.contains(
-                        ShipmentUnpackedInCargoBay(
-                            Employee("Chewbacca"), listOf(
-                                CarPartPackage(CarPart("chassis"), 4),
-                                CarPartPackage(CarPart("wheel"), 2),
-                                CarPartPackage(CarPart("chassis"), 3),
-                            )
-                        )
+                state.journal shouldContain ShipmentUnpackedInCargoBay(
+                    Employee("Chewbacca"), listOf(
+                        CarPartPackage(CarPart("chassis"), 4),
+                        CarPartPackage(CarPart("wheel"), 2),
+                        CarPartPackage(CarPart("chassis"), 3),
                     )
-                }
+                )
             }
         }
 
@@ -259,16 +255,15 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
                 }
             }
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
             And(
                 "The error message should contains \" Yoda may only unpack and inventory all " +
                         "Shipments in the CargoBay once a day \" "
             ) {
-                assertTrue {
-                    exceptions.first().message?.contains(
-                        "Yoda may only unpack and inventory " +
-                                "all Shipments in the CargoBay once a day"
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains(
+                        "Yoda may only unpack and inventory all Shipments in the CargoBay once a day"
                     )!!
                 }
             }

@@ -1,6 +1,9 @@
+import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldHaveSingleElement
+import io.kotest.matchers.shouldNot
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
-import kotlin.test.assertTrue
 
 object AssignEmployeeToTheFactoryFeature : Spek({
     lateinit var exceptions: MutableList<Throwable>
@@ -20,9 +23,7 @@ object AssignEmployeeToTheFactoryFeature : Spek({
                 }
             }
             Then("Fry is assigned to the factory") {
-                assertTrue {
-                    state.journal.contains(EmployeeAssignedToFactory(Employee("Fry")))
-                }
+                state.journal shouldContain EmployeeAssignedToFactory(Employee("Fry"))
             }
         }
 
@@ -39,13 +40,11 @@ object AssignEmployeeToTheFactoryFeature : Spek({
             }
 
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
 
             And("The error message should contain \"the name of Fry only one can have\" ") {
-                assertTrue("The message contains ${exceptions.first().message}") {
-                    exceptions.first().message?.contains("the name of Fry only one can have")!!
-                }
+                exceptions shouldHaveSingleElement { it.message?.contains("the name of Fry only one can have")!! }
             }
         }
 
@@ -59,13 +58,11 @@ object AssignEmployeeToTheFactoryFeature : Spek({
             }
 
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
 
             And("The error message should contain \"Guys with name 'bender' are trouble\" ") {
-                assertTrue("The message contains ${exceptions.first().message}") {
-                    exceptions.first().message?.contains("Guys with the name 'bender' are trouble")!!
-                }
+                exceptions shouldHaveSingleElement { it.message?.contains("Guys with the name 'bender' are trouble")!! }
             }
         }
     }

@@ -1,6 +1,10 @@
+import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldHaveSingleElement
+import io.kotest.matchers.maps.shouldContain
+import io.kotest.matchers.shouldNot
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
-import kotlin.test.assertTrue
 
 object ProduceACarFeature : Spek({
     lateinit var exceptions: MutableList<Throwable>
@@ -27,13 +31,11 @@ object ProduceACarFeature : Spek({
                 }
             }
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
             And("The error should contains the message \"Chewbacca must be assigned to the factory\" ") {
-                assertTrue {
-                    exceptions.any {
-                        it.message?.contains("Chewbacca must be assigned to the factory")!!
-                    }
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains("Chewbacca must be assigned to the factory")!!
                 }
             }
         }
@@ -70,17 +72,15 @@ object ProduceACarFeature : Spek({
                 }
             }
             Then("Then should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
 
             And(
                 "The error should contains the message \"There is not " +
                         "enough part to build ${CarModel.MODEL_T} car\" "
             ) {
-                assertTrue {
-                    exceptions.any {
-                        it.message?.contains("There is not enough part to build ${CarModel.MODEL_T} car")!!
-                    }
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains("There is not enough part to build ${CarModel.MODEL_T} car")!!
                 }
             }
         }
@@ -117,17 +117,15 @@ object ProduceACarFeature : Spek({
                 }
             }
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
 
             And(
                 "The error should contains the message \"There is not " +
                         "enough part to build ${CarModel.MODEL_V} car\" "
             ) {
-                assertTrue {
-                    exceptions.any {
-                        it.message?.contains("There is not enough part to build ${CarModel.MODEL_V} car")!!
-                    }
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains("There is not enough part to build ${CarModel.MODEL_V} car")!!
                 }
             }
         }
@@ -166,15 +164,12 @@ object ProduceACarFeature : Spek({
                 }
             }
             Then("Then a model T car is built") {
-                assertTrue {
-                    state.journal.contains(
-                        CarProduced(
-                            Employee("Yoda"),
-                            CarModel.MODEL_T,
-                            CarModel.neededParts(CarModel.MODEL_T)
-                        )
-                    )
-                }
+
+                state.journal shouldContain CarProduced(
+                    Employee("Yoda"),
+                    CarModel.MODEL_T,
+                    CarModel.neededParts(CarModel.MODEL_T)
+                )
             }
         }
 
@@ -212,15 +207,11 @@ object ProduceACarFeature : Spek({
                 }
             }
             Then("Then a model V car is built") {
-                assertTrue {
-                    state.journal.contains(
-                        CarProduced(
-                            Employee("Yoda"),
-                            CarModel.MODEL_V,
-                            CarModel.neededParts(CarModel.MODEL_V)
-                        )
-                    )
-                }
+                state.journal shouldContain CarProduced(
+                    Employee("Yoda"),
+                    CarModel.MODEL_V,
+                    CarModel.neededParts(CarModel.MODEL_V)
+                )
             }
         }
 
@@ -272,38 +263,26 @@ object ProduceACarFeature : Spek({
                 }
             }
             Then("Then a model T car is built") {
-                assertTrue {
-                    state.journal.contains(
-                        CarProduced(
-                            Employee("Yoda"),
-                            CarModel.MODEL_T,
-                            CarModel.neededParts(CarModel.MODEL_T)
-                        )
-                    )
-                }
+                state.journal shouldContain CarProduced(
+                    Employee("Yoda"),
+                    CarModel.MODEL_T,
+                    CarModel.neededParts(CarModel.MODEL_T)
+                )
             }
             And("There is 2 chassis left") {
-                assertTrue {
-                    state.inventory.getOrDefault(CarPart("chassis"), 0) == 2
-                }
+                state.inventory shouldContain (CarPart("chassis") to 2)
             }
 
             And("There is 1 wheels left") {
-                assertTrue {
-                    state.inventory.getOrDefault(CarPart("wheel"), 0) == 1
-                }
+                state.inventory shouldContain (CarPart("wheel") to 1)
             }
 
             And("There is 1 bits and pieces left") {
-                assertTrue {
-                    state.inventory.getOrDefault(CarPart("bits and pieces"), 0) == 1
-                }
+                state.inventory shouldContain (CarPart("bits and pieces") to 1)
             }
 
             And("There is 0 engine left") {
-                assertTrue {
-                    state.inventory.getOrDefault(CarPart("engine"), 0) == 0
-                }
+                state.inventory shouldContain (CarPart("engine") to 0)
             }
         }
 
@@ -351,15 +330,13 @@ object ProduceACarFeature : Spek({
                 }
             }
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
             And(
                 "The error should contains the message \"There is not enough part to build ${CarModel.MODEL_T} car\" "
             ) {
-                assertTrue {
-                    exceptions.any {
-                        it.message?.contains("There is not enough part to build ${CarModel.MODEL_T} car")!!
-                    }
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains("There is not enough part to build ${CarModel.MODEL_T} car")!!
                 }
             }
         }
@@ -391,10 +368,12 @@ object ProduceACarFeature : Spek({
                 }
             }
             Then("There should be an error ") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
             Then("The error should contains a message \"Yoda may only produce a car once a day\"") {
-                assertTrue { exceptions.first().message?.contains("Yoda may only produce a car once a day")!! }
+                exceptions shouldHaveSingleElement {
+                    it .message?.contains("Yoda may only produce a car once a day")!!
+                }
             }
         }
     }

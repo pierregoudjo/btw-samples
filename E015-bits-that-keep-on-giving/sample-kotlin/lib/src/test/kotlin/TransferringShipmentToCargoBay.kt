@@ -1,6 +1,9 @@
+import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldHaveSingleElement
+import io.kotest.matchers.shouldNot
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
-import kotlin.test.assertTrue
 
 object TransferringShipmentToCargoBay : Spek({
     lateinit var exceptions: MutableList<Throwable>
@@ -29,11 +32,13 @@ object TransferringShipmentToCargoBay : Spek({
             }
 
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
 
             And("The error message should contain \"Empty shipments are not accepted!\" ") {
-                assertTrue { exceptions.first().message?.contains("Empty shipments are not accepted!")!! }
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains("Empty shipments are not accepted!")!!
+                }
             }
         }
 
@@ -47,17 +52,17 @@ object TransferringShipmentToCargoBay : Spek({
             }
 
             Then("There should be an error") {
-                assertTrue("There is an exception") { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
 
             And(
                 "The error message should contain \"there has to be somebody " +
                         "at the factory in order to accept the shipment\" "
             ) {
-                assertTrue("The exception") {
-                    exceptions.first().message?.contains(
-                        "there has to be " +
-                                "somebody at the factory in order to accept the shipment"
+
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains(
+                        "there has to be somebody at the factory in order to accept the shipment"
                     )!!
                 }
             }
@@ -74,18 +79,15 @@ object TransferringShipmentToCargoBay : Spek({
             }
 
             Then("There should be an error") {
-                assertTrue("There is an exception") { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
 
             And(
                 "The error message should contain \"there has to be somebody " +
                         "at the factory in order to accept the shipment\" "
             ) {
-                assertTrue("The message contains ${exceptions.first().message}") {
-                    exceptions.first().message?.contains(
-                        "there has to be somebody" +
-                                " at the factory in order to accept the shipment"
-                    )!!
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains("there has to be somebody at the factory in order to accept the shipment")!!
                 }
             }
         }
@@ -117,12 +119,12 @@ object TransferringShipmentToCargoBay : Spek({
             }
 
             Then("There should be an error") {
-                assertTrue { exceptions.isNotEmpty() }
+                exceptions shouldNot beEmpty()
             }
 
             And("The error message should contain \"More than two shipments can't fit\" ") {
-                assertTrue("The message contains ${exceptions.first().message}") {
-                    exceptions.first().message?.contains("More than two shipments can't fit into this cargo bay")!!
+                exceptions shouldHaveSingleElement {
+                    it.message?.contains("More than two shipments can't fit into this cargo bay")!!
                 }
             }
         }
@@ -156,16 +158,13 @@ object TransferringShipmentToCargoBay : Spek({
             }
 
             Then("The shipment is transferred to the cargo bay") {
-                assertTrue {
-                    state.journal.contains(
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-56",
-                                listOf(CarPartPackage(CarPart("engine"), 6), CarPartPackage(CarPart("chassis"), 2))
-                            )
-                        )
+                state.journal shouldContain ShipmentTransferredToCargoBay(
+                    Shipment(
+                        "shipment-56",
+                        listOf(CarPartPackage(CarPart("engine"), 6), CarPartPackage(CarPart("chassis"), 2))
                     )
-                }
+                )
+
             }
         }
 
@@ -196,21 +195,15 @@ object TransferringShipmentToCargoBay : Spek({
 
             }
             Then("The shipment is transferred to the cargo bay") {
-                assertTrue {
-                    state.journal.contains(
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-56",
-                                listOf(CarPartPackage(CarPart("wheel"), 5), CarPartPackage(CarPart("engines"), 7))
-                            )
-                        )
+                state.journal shouldContain ShipmentTransferredToCargoBay(
+                    Shipment(
+                        "shipment-56",
+                        listOf(CarPartPackage(CarPart("wheel"), 5), CarPartPackage(CarPart("engines"), 7))
                     )
-                }
+                )
             }
             And("A curse word has been uttered by one of the employee") {
-                assertTrue {
-                    state.journal.filterIsInstance<CurseWordUttered>().isNotEmpty()
-                }
+                state.journal.filterIsInstance<CurseWordUttered>() shouldNot beEmpty()
             }
         }
     }
