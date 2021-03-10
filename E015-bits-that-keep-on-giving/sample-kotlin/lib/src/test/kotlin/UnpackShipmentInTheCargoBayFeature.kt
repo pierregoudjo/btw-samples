@@ -2,7 +2,7 @@ import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 import kotlin.test.assertTrue
 
-object UnpackShipmentInTheCargoBayFeature: Spek( {
+object UnpackShipmentInTheCargoBayFeature : Spek({
     lateinit var exceptions: MutableList<Throwable>
     lateinit var state: FactoryState
     Feature("Unpack Shipments in the Cargo Bay") {
@@ -17,7 +17,12 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4))))
+                        ShipmentTransferredToCargoBay(
+                            Shipment(
+                                "shipment-1",
+                                listOf(CarPartPackage(CarPart("chassis"), 4))
+                            )
+                        )
                     )
                 )
 
@@ -40,7 +45,12 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
             Given("No employee assigned to the factory and 1 shipment transferred to the cargo bay") {
                 state = FactoryState(
                     listOf(
-                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4))))
+                        ShipmentTransferredToCargoBay(
+                            Shipment(
+                                "shipment-1",
+                                listOf(CarPartPackage(CarPart("chassis"), 4))
+                            )
+                        )
                     )
                 )
 
@@ -97,7 +107,12 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4))))
+                        ShipmentTransferredToCargoBay(
+                            Shipment(
+                                "shipment-1",
+                                listOf(CarPartPackage(CarPart("chassis"), 4))
+                            )
+                        )
                     )
                 )
 
@@ -128,10 +143,17 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4)))),
                         ShipmentTransferredToCargoBay(
-                            Shipment("shipment-1",
-                            listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("engine"), 3)))
+                            Shipment(
+                                "shipment-1",
+                                listOf(CarPartPackage(CarPart("chassis"), 4))
+                            )
+                        ),
+                        ShipmentTransferredToCargoBay(
+                            Shipment(
+                                "shipment-1",
+                                listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("engine"), 3))
+                            )
                         ),
 
                         )
@@ -170,10 +192,17 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("chassis"), 4)))),
                         ShipmentTransferredToCargoBay(
-                            Shipment("shipment-1",
-                            listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("chassis"), 3)))
+                            Shipment(
+                                "shipment-1",
+                                listOf(CarPartPackage(CarPart("chassis"), 4))
+                            )
+                        ),
+                        ShipmentTransferredToCargoBay(
+                            Shipment(
+                                "shipment-1",
+                                listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("chassis"), 3))
+                            )
                         ),
                     )
                 )
@@ -207,9 +236,19 @@ object UnpackShipmentInTheCargoBayFeature: Spek( {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory(Employee("Yoda")),
-                        ShipmentTransferredToCargoBay(Shipment("shipment-1", listOf(CarPartPackage(CarPart("wheel"), 5)))),
+                        ShipmentTransferredToCargoBay(
+                            Shipment(
+                                "shipment-1",
+                                listOf(CarPartPackage(CarPart("wheel"), 5))
+                            )
+                        ),
                         ShipmentUnpackedInCargoBay(Employee("Yoda"), listOf(CarPartPackage(CarPart("wheel"), 5))),
-                        ShipmentTransferredToCargoBay(Shipment("shipment-2", listOf(CarPartPackage(CarPart("chassis"), 2))))
+                        ShipmentTransferredToCargoBay(
+                            Shipment(
+                                "shipment-2",
+                                listOf(CarPartPackage(CarPart("chassis"), 2))
+                            )
+                        )
                     )
                 )
             }

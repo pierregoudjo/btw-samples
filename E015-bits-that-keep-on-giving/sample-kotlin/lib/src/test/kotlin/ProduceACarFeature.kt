@@ -23,7 +23,7 @@ object ProduceACarFeature : Spek({
             }
             When("Order given to Chewbacca to produce a model T car") {
                 runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Chewbacca"), CarModel.MODEL_T) (state)
+                    state = produceCar(Employee("Chewbacca"), CarModel.MODEL_T)(state)
                 }
             }
             Then("There should be an error") {
@@ -44,12 +44,14 @@ object ProduceACarFeature : Spek({
                     listOf(
                         EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentTransferredToCargoBay(
-                            Shipment("shipment-1",
-                            listOf(
-                                CarPartPackage(CarPart("chassis"), 3),
-                                CarPartPackage(CarPart("wheel"), 5),
-                                CarPartPackage(CarPart("bits and pieces"), 5)
-                            ))
+                            Shipment(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPackage(CarPart("chassis"), 3),
+                                    CarPartPackage(CarPart("wheel"), 5),
+                                    CarPartPackage(CarPart("bits and pieces"), 5)
+                                )
+                            )
                         ),
                         ShipmentUnpackedInCargoBay(
                             Employee("Yoda"), listOf(
@@ -89,12 +91,14 @@ object ProduceACarFeature : Spek({
                     listOf(
                         EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentTransferredToCargoBay(
-                            Shipment("shipment-1",
-                            listOf(
-                                CarPartPackage(CarPart("chassis"), 3),
-                                CarPartPackage(CarPart("wheel"), 5),
-                                CarPartPackage(CarPart("bits and pieces"), 5)
-                            ))
+                            Shipment(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPackage(CarPart("chassis"), 3),
+                                    CarPartPackage(CarPart("wheel"), 5),
+                                    CarPartPackage(CarPart("bits and pieces"), 5)
+                                )
+                            )
                         ),
                         ShipmentUnpackedInCargoBay(
                             Employee("Yoda"), listOf(
@@ -134,13 +138,15 @@ object ProduceACarFeature : Spek({
                     listOf(
                         EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentTransferredToCargoBay(
-                            Shipment("shipment-1",
-                            listOf(
-                                CarPartPackage(CarPart("chassis"), 3),
-                                CarPartPackage(CarPart("wheel"), 5),
-                                CarPartPackage(CarPart("bits and pieces"), 5),
-                                CarPartPackage(CarPart("engine"), 2),
-                            ))
+                            Shipment(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPackage(CarPart("chassis"), 3),
+                                    CarPartPackage(CarPart("wheel"), 5),
+                                    CarPartPackage(CarPart("bits and pieces"), 5),
+                                    CarPartPackage(CarPart("engine"), 2),
+                                )
+                            )
                         ),
                         ShipmentUnpackedInCargoBay(
                             Employee("Yoda"), listOf(
@@ -178,13 +184,15 @@ object ProduceACarFeature : Spek({
                     listOf(
                         EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentTransferredToCargoBay(
-                            Shipment("shipment-1",
-                            listOf(
-                                CarPartPackage(CarPart("chassis"), 3),
-                                CarPartPackage(CarPart("wheel"), 5),
-                                CarPartPackage(CarPart("bits and pieces"), 5),
-                                CarPartPackage(CarPart("engine"), 2),
-                            ))
+                            Shipment(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPackage(CarPart("chassis"), 3),
+                                    CarPartPackage(CarPart("wheel"), 5),
+                                    CarPartPackage(CarPart("bits and pieces"), 5),
+                                    CarPartPackage(CarPart("engine"), 2),
+                                )
+                            )
                         ),
                         ShipmentUnpackedInCargoBay(
                             Employee("Yoda"), listOf(
@@ -225,13 +233,15 @@ object ProduceACarFeature : Spek({
                         EmployeeAssignedToFactory(Employee("Yoda")),
                         EmployeeAssignedToFactory(Employee("Luke")),
                         ShipmentTransferredToCargoBay(
-                            Shipment("shipment-1",
-                            listOf(
-                                CarPartPackage(CarPart("chassis"), 3),
-                                CarPartPackage(CarPart("wheel"), 5),
-                                CarPartPackage(CarPart("bits and pieces"), 5),
-                                CarPartPackage(CarPart("engine"), 2),
-                            ))
+                            Shipment(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPackage(CarPart("chassis"), 3),
+                                    CarPartPackage(CarPart("wheel"), 5),
+                                    CarPartPackage(CarPart("bits and pieces"), 5),
+                                    CarPartPackage(CarPart("engine"), 2),
+                                )
+                            )
                         ),
                         ShipmentUnpackedInCargoBay(
                             Employee("Yoda"), listOf(
@@ -308,13 +318,15 @@ object ProduceACarFeature : Spek({
                         EmployeeAssignedToFactory(Employee("Luke")),
                         EmployeeAssignedToFactory(Employee("Lea")),
                         ShipmentTransferredToCargoBay(
-                            Shipment("shipment-1",
-                            listOf(
-                                CarPartPackage(CarPart("chassis"), 3),
-                                CarPartPackage(CarPart("wheel"), 5),
-                                CarPartPackage(CarPart("bits and pieces"), 5),
-                                CarPartPackage(CarPart("engine"), 2),
-                            ))
+                            Shipment(
+                                "shipment-1",
+                                listOf(
+                                    CarPartPackage(CarPart("chassis"), 3),
+                                    CarPartPackage(CarPart("wheel"), 5),
+                                    CarPartPackage(CarPart("bits and pieces"), 5),
+                                    CarPartPackage(CarPart("engine"), 2),
+                                )
+                            )
                         ),
                         ShipmentUnpackedInCargoBay(
                             Employee("Yoda"), listOf(
@@ -362,7 +374,11 @@ object ProduceACarFeature : Spek({
                         EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentUnpackedInCargoBay(
                             Employee("Yoda"),
-                            listOf(CarPartPackage(CarPart("wheel"), 60), CarPartPackage(CarPart("engine"), 40), CarPartPackage(CarPart("bits and pieces"), 20))
+                            listOf(
+                                CarPartPackage(CarPart("wheel"), 60),
+                                CarPartPackage(CarPart("engine"), 40),
+                                CarPartPackage(CarPart("bits and pieces"), 20)
+                            )
                         ),
                         CarProduced(Employee("Yoda"), CarModel.MODEL_T, CarModel.neededParts(CarModel.MODEL_T))
 

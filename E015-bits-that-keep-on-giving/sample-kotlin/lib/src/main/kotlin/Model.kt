@@ -5,8 +5,9 @@ data class CurseWordUttered(val curse: Curse) : Event {
 
 data class ShipmentTransferredToCargoBay(val shipment: Shipment) : Event {
     override fun toString() =
-        "Shipment '$shipment' transferred to cargo bay: " + shipment.carPartPackages.map { "${it.part} ${it.quantity} pcs" }
-            .reduce { acc, s -> "$acc, $s" }
+        "Shipment '$shipment' transferred to cargo bay: " +
+                shipment.carPartPackages.map { "${it.part.name} ${it.quantity} pcs" }
+                    .reduce { acc, s -> "$acc, $s" }
 }
 
 data class EmployeeAssignedToFactory(val employee: Employee) : Event {
