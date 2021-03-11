@@ -372,7 +372,7 @@ object ProduceACarFeature : Spek({
             }
             Then("The error should contains a message \"Yoda may only produce a car once a day\"") {
                 exceptions shouldHaveSingleElement {
-                    it .message?.contains("Yoda may only produce a car once a day")!!
+                    it.message?.contains("Yoda may only produce a car once a day")!!
                 }
             }
         }

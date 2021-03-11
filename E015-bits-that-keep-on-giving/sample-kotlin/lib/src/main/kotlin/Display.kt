@@ -1,4 +1,3 @@
-const val SLEEP_DURATION: Long = 1000
 fun doPaperWork(workName: String) {
     println(" > Work: Papers... $workName ...")
 }
