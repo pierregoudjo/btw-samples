@@ -34,7 +34,7 @@ object TransferringShipmentToCargoBayFeature : Spek({
             }
 
             Then("The error message should contain \"Empty shipments are not accepted!\" ") {
-                exception.message shouldContain ("Empty shipments are not accepted!")
+                exception.message shouldContain "Empty shipments are not accepted!"
             }
         }
 
@@ -127,7 +127,7 @@ object TransferringShipmentToCargoBayFeature : Spek({
             }
 
             And("The error message should contain \"More than two shipments can't fit\" ") {
-                exception.message shouldContain ("More than two shipments can't fit into this cargo bay")
+                exception.message shouldContain "More than two shipments can't fit into this cargo bay"
 
             }
         }

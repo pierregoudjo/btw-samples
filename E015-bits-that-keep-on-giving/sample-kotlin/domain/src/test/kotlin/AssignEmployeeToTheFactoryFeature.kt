@@ -37,7 +37,7 @@ object AssignEmployeeToTheFactoryFeature : Spek({
             }
 
             Then("The error message should contain \"the name of Fry only one can have\" ") {
-                exception.message shouldContain ("the name of Fry only one can have")
+                exception.message shouldContain "the name of Fry only one can have"
             }
         }
 

@@ -32,7 +32,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
             }
             Then("The error should contains \"Yoda must be assigned to the factory\"") {
-                exception.message shouldContain ("Yoda must be assigned to the factory")
+                exception.message shouldContain "Yoda must be assigned to the factory"
 
             }
         }
@@ -60,7 +60,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
 
             Then("The error should contains \"Yoda must be assigned to the factory\"") {
-                exception.message shouldContain ("Yoda must be assigned to the factory")
+                exception.message shouldContain "Yoda must be assigned to the factory"
             }
         }
 
@@ -86,7 +86,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
 
             Then("The error should contains \"There should be a shipment to unpack\"") {
-                exception.message shouldContain ("There should be a shipment to unpack")
+                exception.message shouldContain "There should be a shipment to unpack"
             }
         }
 
