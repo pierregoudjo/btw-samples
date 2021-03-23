@@ -1,4 +1,4 @@
-typealias Command = (FactoryState) -> FactoryState
+typealias Command = (FactoryState) -> Events
 
 fun produceCar(employee: Employee, carModel: CarModel): Command = { state ->
     echoCommand("Order $employee to build a $carModel car")
@@ -26,7 +26,7 @@ fun produceCar(employee: Employee, carModel: CarModel): Command = { state ->
 
     doPaperWork("Writing car specification documents")
 
-    recordThat(listOf(CarProduced(employee, carModel, neededPartsToBuildTheCar)), state)
+    listOf(CarProduced(employee, carModel, neededPartsToBuildTheCar))
 }
 
 fun unpackAndInventoryShipmentInCargoBay(employee: Employee): Command = { state ->
@@ -46,14 +46,11 @@ fun unpackAndInventoryShipmentInCargoBay(employee: Employee): Command = { state 
 
     doRealWork("passing supplies")
 
-    recordThat(
-        listOf(
-            ShipmentUnpackedInCargoBay(
-                employee,
-                state.shipmentsWaitingToBeUnpacked.map { it.carPartPackages }.flatten()
-            )
-        ),
-        state
+    listOf(
+        ShipmentUnpackedInCargoBay(
+            employee,
+            state.shipmentsWaitingToBeUnpacked.map { it.carPartPackages }.flatten()
+        )
     )
 }
 
@@ -74,7 +71,7 @@ fun assignEmployeeToFactory(employee: Employee): Command = { state ->
     }
 
     doPaperWork("Assign employee to the factory")
-    recordThat(listOf(EmployeeAssignedToFactory(employee)), state)
+    listOf(EmployeeAssignedToFactory(employee))
 }
 
 private const val NUMBER_OF_PARTS_TOO_MUCH_TO_HANDLE = 10
@@ -110,7 +107,7 @@ fun transferShipmentToCargoBay(shipment: Shipment): Command = { state ->
         else -> emptyList()
     }
 
-    recordThat(transferredEvent + curseWordEvent, state)
+    transferredEvent + curseWordEvent
 }
 
 private fun recordThat(events: Events, state: FactoryState): FactoryState {

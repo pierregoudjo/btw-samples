@@ -1,46 +1,40 @@
-import io.kotest.matchers.collections.beEmpty
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.maps.shouldContain
-import io.kotest.matchers.shouldNot
+import io.kotest.matchers.string.shouldContain
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 
 object ProduceACarFeature : Spek({
-    lateinit var exceptions: MutableList<Throwable>
-    lateinit var state: FactoryState
     Feature("Produce a car") {
-        beforeEachScenario {
-            state = FactoryState(emptyList())
-
-            exceptions = mutableListOf()
-        }
 
         Scenario("Order to a non assigned employee to produce a model T car") {
+            lateinit var state: FactoryState
+            lateinit var exception: Throwable
+
             Given("Yoda assigned to the factory") {
                 state = FactoryState(
                     listOf(
                         EmployeeAssignedToFactory(Employee("Yoda"))
                     )
                 )
+            }
 
-            }
-            When("Order given to Chewbacca to produce a model T car") {
-                runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Chewbacca"), CarModel.MODEL_T)(state)
+            When("Order given to Chewbacca to produce a model T car, There should be an error") {
+                exception = shouldThrow<IllegalStateException> {
+                    produceCar(Employee("Chewbacca"), CarModel.MODEL_T)(state)
                 }
             }
-            Then("There should be an error") {
-                exceptions shouldNot beEmpty()
-            }
-            And("The error should contains the message \"Chewbacca must be assigned to the factory\" ") {
-                exceptions shouldHaveSingleElement {
-                    it.message?.contains("Chewbacca must be assigned to the factory")!!
-                }
+
+            Then("The error should contains the message \"Chewbacca must be assigned to the factory\" ") {
+                exception.message shouldContain "Chewbacca must be assigned to the factory"
             }
         }
 
         Scenario("Order to build a model T car but there is not enough parts") {
+            lateinit var state: FactoryState
+            lateinit var exception: Throwable
+
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels and 5 bits and pieces") {
                 state = FactoryState(
                     listOf(
@@ -66,26 +60,24 @@ object ProduceACarFeature : Spek({
                 )
 
             }
-            When("Yoda is ordered to build a model T car") {
-                runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
+            When("Yoda is ordered to build a model T car, There should be an error") {
+                exception = shouldThrow<IllegalStateException> {
+                    produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
                 }
-            }
-            Then("Then should be an error") {
-                exceptions shouldNot beEmpty()
+
             }
 
-            And(
+            Then(
                 "The error should contains the message \"There is not " +
                         "enough part to build ${CarModel.MODEL_T} car\" "
             ) {
-                exceptions shouldHaveSingleElement {
-                    it.message?.contains("There is not enough part to build ${CarModel.MODEL_T} car")!!
-                }
+                exception.message shouldContain "There is not enough part to build ${CarModel.MODEL_T} car"
             }
         }
 
         Scenario("Order to build a model V car but there is not enough parts") {
+            lateinit var state: FactoryState
+            lateinit var exception: Throwable
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels and 5 bits and pieces") {
                 state = FactoryState(
                     listOf(
@@ -111,26 +103,27 @@ object ProduceACarFeature : Spek({
                 )
 
             }
-            When("Yoda is ordered to build a model T car") {
-                runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_V)(state)
+            When("Yoda is ordered to build a model T car, There should be an error") {
+                exception = shouldThrow<IllegalStateException> {
+                    produceCar(
+                        Employee("Yoda"),
+                        CarModel.MODEL_V
+                    )(state)
                 }
             }
-            Then("There should be an error") {
-                exceptions shouldNot beEmpty()
-            }
 
-            And(
+            Then(
                 "The error should contains the message \"There is not " +
                         "enough part to build ${CarModel.MODEL_V} car\" "
             ) {
-                exceptions shouldHaveSingleElement {
-                    it.message?.contains("There is not enough part to build ${CarModel.MODEL_V} car")!!
-                }
+                exception.message shouldContain "There is not enough part to build ${CarModel.MODEL_V} car"
             }
         }
 
         Scenario("Order to build a model T car and there is enough parts") {
+            lateinit var state: FactoryState
+            lateinit var events: List<Event>
+
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines") {
                 state = FactoryState(
                     listOf(
@@ -159,13 +152,11 @@ object ProduceACarFeature : Spek({
 
             }
             When("Yoda is ordered to produce a model T car") {
-                runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
-                }
+                events = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
             }
             Then("Then a model T car is built") {
 
-                state.journal shouldContain CarProduced(
+                events shouldContain CarProduced(
                     Employee("Yoda"),
                     CarModel.MODEL_T,
                     CarModel.neededParts(CarModel.MODEL_T)
@@ -174,6 +165,9 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("Order to build a model V car and there is enough parts") {
+            lateinit var state: FactoryState
+            lateinit var events: List<Event>
+
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines") {
                 state = FactoryState(
                     listOf(
@@ -202,12 +196,10 @@ object ProduceACarFeature : Spek({
 
             }
             When("Yoda is ordered to produce a model V car") {
-                runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_V)(state)
-                }
+                events = produceCar(Employee("Yoda"), CarModel.MODEL_V)(state)
             }
             Then("Then a model V car is built") {
-                state.journal shouldContain CarProduced(
+                events shouldContain CarProduced(
                     Employee("Yoda"),
                     CarModel.MODEL_V,
                     CarModel.neededParts(CarModel.MODEL_V)
@@ -216,6 +208,10 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("Order to build a model T car and checking the remaining parts") {
+            lateinit var state: FactoryState
+            lateinit var intermediateState: FactoryState
+            lateinit var events: List<Event>
+
             Given(
                 "Yoda and Luke assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines"
             ) {
@@ -252,24 +248,14 @@ object ProduceACarFeature : Spek({
             And("Model V car requires 1 chassis, 2 wheels, 1 engine and 2 bits and pieces parts to produce") {
 
             }
-            When("Yoda is ordered to produce a model T car") {
-                runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
-                }
+            When("Yoda is ordered to produce a model T car and Luke is ordered to produce a model V car") {
+                val produceCarEvents = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
+                intermediateState = apply(produceCarEvents, state)
+                events = produceCar(Employee("Luke"), CarModel.MODEL_V)(intermediateState)
+                state = apply(events, intermediateState)
             }
-            When("Luke is ordered to produce a model V car") {
-                runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Luke"), CarModel.MODEL_V)(state)
-                }
-            }
-            Then("Then a model T car is built") {
-                state.journal shouldContain CarProduced(
-                    Employee("Yoda"),
-                    CarModel.MODEL_T,
-                    CarModel.neededParts(CarModel.MODEL_T)
-                )
-            }
-            And("There is 2 chassis left") {
+
+            Then("There is 2 chassis left") {
                 state.inventory shouldContain (CarPart("chassis") to 2)
             }
 
@@ -287,6 +273,9 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("Not enough stock to build a new car after some have already been built") {
+            lateinit var state: FactoryState
+            lateinit var exception: Throwable
+
             Given(
                 "Yoda assigned to the factory, 3 chassis, 5 wheels 5 bits and pieces and 2 engines " +
                         "shipment transferred and unpacked and 2 model T cars built"
@@ -324,24 +313,20 @@ object ProduceACarFeature : Spek({
             And("Model T car requires 2 wheels, 1 engine, and 2 bits and pieces parts to produce") {
 
             }
-            When("Yoda is ordered to build a model T car") {
-                runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Lea"), CarModel.MODEL_T)(state)
-                }
-            }
-            Then("There should be an error") {
-                exceptions shouldNot beEmpty()
+            When("Yoda is ordered to build a model T car, There should be an error") {
+                exception = shouldThrow<IllegalStateException> { produceCar(Employee("Lea"), CarModel.MODEL_T)(state) }
             }
             And(
                 "The error should contains the message \"There is not enough part to build ${CarModel.MODEL_T} car\" "
             ) {
-                exceptions shouldHaveSingleElement {
-                    it.message?.contains("There is not enough part to build ${CarModel.MODEL_T} car")!!
-                }
+                exception.message shouldContain "There is not enough part to build ${CarModel.MODEL_T} car"
             }
         }
 
         Scenario("An employee may only produce a car once a day") {
+            lateinit var state: FactoryState
+            lateinit var exception: Throwable
+
             Given(
                 "Yoda an employee of the factory who has already built a car today" +
                         " and enough part left on the shelf to build a model T car"
@@ -363,17 +348,11 @@ object ProduceACarFeature : Spek({
                 )
             }
             When("Yoda is ordered to build a car") {
-                runWithCatchAndAddToExceptionList(exceptions) {
-                    state = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
-                }
+                exception = shouldThrow<IllegalStateException> { produceCar(Employee("Yoda"), CarModel.MODEL_T)(state) }
             }
-            Then("There should be an error ") {
-                exceptions shouldNot beEmpty()
-            }
+
             Then("The error should contains a message \"Yoda may only produce a car once a day\"") {
-                exceptions shouldHaveSingleElement {
-                    it.message?.contains("Yoda may only produce a car once a day")!!
-                }
+                exception.message shouldContain "Yoda may only produce a car once a day"
             }
         }
     }
