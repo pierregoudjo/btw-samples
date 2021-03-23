@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.4.30"
-    application
+    `java-library`
 }
 
 group = "xyz.goudjo.btw-samples"
@@ -33,9 +33,6 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-application {
-    mainClassName = "MainKt"
-}
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     freeCompilerArgs = listOf("-Xinline-classes")
