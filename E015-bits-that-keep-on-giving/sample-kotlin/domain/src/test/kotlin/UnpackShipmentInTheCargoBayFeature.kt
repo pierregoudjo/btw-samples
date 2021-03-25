@@ -1,6 +1,10 @@
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.string.shouldContain
+import model.CarPart
+import model.CarPartPackage
+import model.Employee
+import model.Shipment
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 
@@ -10,16 +14,14 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
         Scenario("Order given non-assigned employee to the factory to unpack shipments in the cargo bay") {
             lateinit var exception: Throwable
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
             Given("Chewbacca assigned to the factory and 1 shipment transferred in the cargo bay") {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-1",
-                                listOf(CarPartPackage(CarPart("chassis"), 4))
-                            )
+                state = listOf(
+                    EmployeeAssignedToFactory(Employee("Chewbacca")),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-1",
+                            listOf(CarPartPackage(CarPart("chassis"), 4))
                         )
                     )
                 )
@@ -39,15 +41,13 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
         Scenario("No employee assigned to the factory to unpack the cargo bay") {
             lateinit var exception: Throwable
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
             Given("No employee assigned to the factory and 1 shipment transferred to the cargo bay") {
-                state = FactoryState(
-                    listOf(
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-1",
-                                listOf(CarPartPackage(CarPart("chassis"), 4))
-                            )
+                state = listOf(
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-1",
+                            listOf(CarPartPackage(CarPart("chassis"), 4))
                         )
                     )
                 )
@@ -69,12 +69,10 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
                     " is ordered to unpack the shipments in the cargo bay"
         ) {
             lateinit var exception: Throwable
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
             Given("Chewbacca assigned to the factory") {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(Employee("Chewbacca")),
-                    )
+                state = listOf(
+                    EmployeeAssignedToFactory(Employee("Chewbacca")),
                 )
 
             }
@@ -92,20 +90,18 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
         Scenario("Order an assigned employee to unpack a shipment in the cargo bay") {
 
-            lateinit var events: List<Event>
-            lateinit var state: FactoryState
+            lateinit var events: List<FactoryDomainEvent>
+            lateinit var state: List<FactoryDomainEvent>
 
             Given(
                 "Chewbacca assigned to the factory and there is a shipment of 4 chassis transferred to the cargo bay"
             ) {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-1",
-                                listOf(CarPartPackage(CarPart("chassis"), 4))
-                            )
+                state = listOf(
+                    EmployeeAssignedToFactory(Employee("Chewbacca")),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-1",
+                            listOf(CarPartPackage(CarPart("chassis"), 4))
                         )
                     )
                 )
@@ -125,30 +121,29 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
         }
 
         Scenario("Order an assigned employee to unpack two shipments in the cargo bay") {
-            lateinit var events: List<Event>
-            lateinit var state: FactoryState
+            lateinit var events: List<FactoryDomainEvent>
+            lateinit var state: List<FactoryDomainEvent>
             Given(
                 "Chewbacca assigned to the factory and there is a shipment of 4 chassis " +
                         "and another shipment of 2 wheels and 3 engines in the cargo bay"
             ) {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-1",
-                                listOf(CarPartPackage(CarPart("chassis"), 4))
-                            )
-                        ),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-1",
-                                listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("engine"), 3))
-                            )
-                        ),
-
+                state = listOf(
+                    EmployeeAssignedToFactory(Employee("Chewbacca")),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-1",
+                            listOf(CarPartPackage(CarPart("chassis"), 4))
                         )
-                )
+                    ),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-1",
+                            listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("engine"), 3))
+                        )
+                    ),
+
+                    )
+
 
             }
 
@@ -169,28 +164,26 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
         }
 
         Scenario("Order an assigned employee to unpack two shipments with common items from the cargo bay") {
-            lateinit var events: List<Event>
-            lateinit var state: FactoryState
+            lateinit var events: List<FactoryDomainEvent>
+            lateinit var state: List<FactoryDomainEvent>
             Given(
                 "Chewbacca assigned to the factory and there is a shipment of 4" +
                         " chassis and another shipment of 2 wheels and 3 chassis in the cargo bay"
             ) {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-1",
-                                listOf(CarPartPackage(CarPart("chassis"), 4))
-                            )
-                        ),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-1",
-                                listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("chassis"), 3))
-                            )
-                        ),
-                    )
+                state = listOf(
+                    EmployeeAssignedToFactory(Employee("Chewbacca")),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-1",
+                            listOf(CarPartPackage(CarPart("chassis"), 4))
+                        )
+                    ),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-1",
+                            listOf(CarPartPackage(CarPart("wheel"), 2), CarPartPackage(CarPart("chassis"), 3))
+                        )
+                    ),
                 )
 
             }
@@ -212,23 +205,24 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
         Scenario("An employee may unpack shipments in the cargo bay once a day") {
             lateinit var exception: Throwable
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
             Given("Yoda already unpack shipments the cargo bay today") {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(Employee("Yoda")),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-1",
-                                listOf(CarPartPackage(CarPart("wheel"), 5))
-                            )
-                        ),
-                        ShipmentUnpackedInCargoBay(Employee("Yoda"), listOf(CarPartPackage(CarPart("wheel"), 5))),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-2",
-                                listOf(CarPartPackage(CarPart("chassis"), 2))
-                            )
+                state = listOf(
+                    EmployeeAssignedToFactory(Employee("Yoda")),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-1",
+                            listOf(CarPartPackage(CarPart("wheel"), 5))
+                        )
+                    ),
+                    ShipmentUnpackedInCargoBay(
+                        Employee("Yoda"),
+                        listOf(CarPartPackage(CarPart("wheel"), 5))
+                    ),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-2",
+                            listOf(CarPartPackage(CarPart("chassis"), 2))
                         )
                     )
                 )

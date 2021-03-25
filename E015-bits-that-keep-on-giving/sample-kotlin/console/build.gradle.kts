@@ -1,20 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm")
     application
 }
 
 group = "xyz.goudjo.btw-samples"
 version = "1.0-SNAPSHOT"
-
-repositories {
-    jcenter()
-}
-
-dependencies {
-    implementation(project(":lib"))
-}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"

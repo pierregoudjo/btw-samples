@@ -1,6 +1,11 @@
-typealias Command = (FactoryState) -> Events
+import model.CarModel
+import model.Curse
+import model.Employee
+import model.Shipment
 
-fun produceCar(employee: Employee, carModel: CarModel): Command = { state ->
+fun produceCar(employee: Employee, carModel: CarModel): Command<FactoryDomainEvent> = { events ->
+    val state = Factory(events)
+
     echoCommand("Order $employee to build a $carModel car")
 
     if (!state.listOfEmployeeNames.contains(employee)) {
@@ -29,7 +34,9 @@ fun produceCar(employee: Employee, carModel: CarModel): Command = { state ->
     listOf(CarProduced(employee, carModel, neededPartsToBuildTheCar))
 }
 
-fun unpackAndInventoryShipmentInCargoBay(employee: Employee): Command = { state ->
+fun unpackAndInventoryShipmentInCargoBay(employee: Employee): Command<FactoryDomainEvent> = { events ->
+    val state = Factory(events)
+
     echoCommand("Order $employee to unpack shipments from cargo bay")
 
     if (!state.listOfEmployeeNames.contains(employee)) {
@@ -54,7 +61,8 @@ fun unpackAndInventoryShipmentInCargoBay(employee: Employee): Command = { state 
     )
 }
 
-fun assignEmployeeToFactory(employee: Employee): Command = { state ->
+fun assignEmployeeToFactory(employee: Employee): Command<FactoryDomainEvent> = { events ->
+    val state = Factory(events)
     echoCommand("assign employee $employee to the factory")
 
     // Hey look, a business rule implementation
@@ -76,7 +84,8 @@ fun assignEmployeeToFactory(employee: Employee): Command = { state ->
 
 private const val NUMBER_OF_PARTS_TOO_MUCH_TO_HANDLE = 10
 
-fun transferShipmentToCargoBay(shipment: Shipment): Command = { state ->
+fun transferShipmentToCargoBay(shipment: Shipment): Command<FactoryDomainEvent> = { events ->
+    val state = Factory(events)
     echoCommand("transfer shipment to cargo")
 
     if (state.listOfEmployeeNames.isEmpty()) {
@@ -108,16 +117,4 @@ fun transferShipmentToCargoBay(shipment: Shipment): Command = { state ->
     }
 
     transferredEvent + curseWordEvent
-}
-
-private fun recordThat(events: Events, state: FactoryState): FactoryState {
-    return apply(events, state).also {
-        events.forEach {
-            announceInsideFactory(it)
-        }
-    }
-}
-
-private fun announceInsideFactory(event: Event) {
-    println("!> Event $event".green())
 }

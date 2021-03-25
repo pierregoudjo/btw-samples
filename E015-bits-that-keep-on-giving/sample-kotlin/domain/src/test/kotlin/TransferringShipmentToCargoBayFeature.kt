@@ -3,21 +3,23 @@ import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldNot
 import io.kotest.matchers.string.shouldContain
+import model.CarPart
+import model.CarPartPackage
+import model.Employee
+import model.Shipment
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 
 object TransferringShipmentToCargoBayFeature : Spek({
     Feature("Transferring shipment to cargo bay") {
         Scenario("An empty shipment comes to the cargo bay") {
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given("An employee 'Yoda' assigned to the factory") {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(
-                            Employee("Yoda")
-                        )
+                state = listOf(
+                    EmployeeAssignedToFactory(
+                        Employee("Yoda")
                     )
                 )
             }
@@ -39,10 +41,10 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("An empty shipment come into an empty factory") {
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
             lateinit var exception: Throwable
             Given("An empty factory") {
-                state = FactoryState(emptyList())
+                state = emptyList()
             }
             When("An empty shipment comes to the cargo bay, there should be an error") {
                 exception = shouldThrow<IllegalStateException> {
@@ -64,11 +66,11 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("A shipment come into an empty factory") {
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given("An empty factory") {
-                state = FactoryState(emptyList())
+                state = emptyList()
             }
 
             When("An empty shipment comes to the cargo bay, There should be an error") {
@@ -91,27 +93,26 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("There are already two shipments") {
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given("There is an employee assigned to the factory and two shipments waiting in the cargo bay") {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-11",
-                                listOf(CarPartPackage(CarPart("engine"), 3))
-                            )
-                        ),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-12",
-                                listOf(CarPartPackage(CarPart("wheel"), 40))
-                            )
+                state = listOf(
+                    EmployeeAssignedToFactory(Employee("Chewbacca")),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-11",
+                            listOf(CarPartPackage(CarPart("engine"), 3))
+                        )
+                    ),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-12",
+                            listOf(CarPartPackage(CarPart("wheel"), 40))
                         )
                     )
                 )
+
 
             }
 
@@ -133,17 +134,15 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("A shipment comes to a factory with an employee assigned and 1 shipment of in the cargo bay") {
-            lateinit var state: FactoryState
-            lateinit var events: List<Event>
+            lateinit var state: List<FactoryDomainEvent>
+            lateinit var events: List<FactoryDomainEvent>
             Given("A factory with an employee assigned and 1 shipment in the cargo bay") {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-55",
-                                listOf(CarPartPackage(CarPart("wheel"), 5))
-                            )
+                state = listOf(
+                    EmployeeAssignedToFactory(Employee("Chewbacca")),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-55",
+                            listOf(CarPartPackage(CarPart("wheel"), 5))
                         )
                     )
                 )
@@ -171,17 +170,15 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("A shipment of 5 wheels and 7 engines comes to the factory and the employee curse") {
-            lateinit var state: FactoryState
-            lateinit var events: List<Event>
+            lateinit var state: List<FactoryDomainEvent>
+            lateinit var events: List<FactoryDomainEvent>
             Given("A factory with an employee assigned and 1 shipment in the cargo bay") {
-                state = FactoryState(
-                    listOf(
-                        EmployeeAssignedToFactory(Employee("Chewbacca")),
-                        ShipmentTransferredToCargoBay(
-                            Shipment(
-                                "shipment-58",
-                                listOf(CarPartPackage(CarPart("chassis"), 3))
-                            )
+                state = listOf(
+                    EmployeeAssignedToFactory(Employee("Chewbacca")),
+                    ShipmentTransferredToCargoBay(
+                        Shipment(
+                            "shipment-58",
+                            listOf(CarPartPackage(CarPart("chassis"), 3))
                         )
                     )
                 )

@@ -1,8 +1,13 @@
-import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
+import model.Employees
+import model.Inventory
+import model.Shipments
 
-class FactoryState(journal: Events) {
-    val journal = journal.toPersistentList()
+typealias Events = List<FactoryDomainEvent>
+
+
+class Factory(journal: Events) : Aggregate<FactoryDomainEvent>{
+    override val journal = journal.toPersistentList()
 
     val listOfEmployeeNames: Employees by lazy {
         this.journal
@@ -48,9 +53,4 @@ class FactoryState(journal: Events) {
             .filterIsInstance<ShipmentUnpackedInCargoBay>()
             .map { it.employee }
     }
-}
-
-fun apply(event: Events, state: FactoryState): FactoryState {
-    val events = (state.journal + event)
-    return FactoryState(events)
 }

@@ -1,6 +1,7 @@
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.string.shouldContain
+import model.Employee
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 
@@ -10,11 +11,11 @@ object AssignEmployeeToTheFactoryFeature : Spek({
     Feature("Assign employee to the factory") {
 
         Scenario("Assign employee to an empty factory") {
-            lateinit var state: FactoryState
-            lateinit var events: List<Event>
+            lateinit var state: List<FactoryDomainEvent>
+            lateinit var events: List<FactoryDomainEvent>
 
             Given("An empty factory") {
-                state = FactoryState(emptyList())
+                state = emptyList()
             }
             When("An employee named \"Fry\" comes to the factory") {
                 events = assignEmployeeToFactory(Employee("Fry"))(state)
@@ -25,10 +26,10 @@ object AssignEmployeeToTheFactoryFeature : Spek({
         }
 
         Scenario("An already assigned employee is assigned again") {
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
 
             Given("A factory where an employee named \"Fry\" is assigned") {
-                state = FactoryState(listOf(EmployeeAssignedToFactory(Employee("Fry"))))
+                state = listOf(EmployeeAssignedToFactory(Employee("Fry")))
 
             }
 
@@ -42,10 +43,10 @@ object AssignEmployeeToTheFactoryFeature : Spek({
         }
 
         Scenario("Bender comes to the factory") {
-            lateinit var state: FactoryState
+            lateinit var state: List<FactoryDomainEvent>
 
             Given("An empty factory") {
-                state = FactoryState(emptyList())
+                state = emptyList()
             }
 
             When("An employee named Bender is assigned to the factory, there should be an error") {
