@@ -1,3 +1,5 @@
+package ktcodec
+
 inline class StreamName(val streamName: String)
 
 private const val DASH = '-'

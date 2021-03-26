@@ -6,6 +6,8 @@ import io.kotest.property.arbitrary.next
 import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
 import kotlinx.serialization.Serializable
+import ktcodec.TimeLineEvent
+import ktcodec.create
 
 @Serializable
 data class Sample(val sample1: String, val sample2: String)
