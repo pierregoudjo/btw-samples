@@ -16,16 +16,13 @@ class EventCodecTest : DescribeSpec({
                 String(timelineEvent.eventData.data)
             }
 
-            val codec = create(encFn, decFn)
+            val (encode, decode) = create(encFn, decFn)
 
 
             checkAll<String> { event ->
-                val eventData = codec.encode(event)
+                val eventData = encode(event)
                 val timeLineEvent = TimeLineEvent(eventData, 0)
-                val eventEncoded = codec.decode(timeLineEvent)
-
-                println("$event =>> $eventEncoded")
-
+                val eventEncoded = decode(timeLineEvent)
                 event shouldBe eventEncoded
             }
         }

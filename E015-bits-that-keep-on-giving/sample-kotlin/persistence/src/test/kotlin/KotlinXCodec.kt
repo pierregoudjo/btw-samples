@@ -24,12 +24,12 @@ class KotlinXCodec : DescribeSpec({
             checkAll(sampleArb) { sample ->
                 val serializer = Sample.serializer()
 
-                val codec = create(serialize(serializer), deserialize(serializer))
+                val (encode, decode) = create(serialize(serializer), deserialize(serializer))
 
 
-                val eventData = codec.encode(sample)
+                val eventData = encode(sample)
                 val timeLineEvent = TimeLineEvent(eventData, 0)
-                val eventEncoded = codec.decode(timeLineEvent)
+                val eventEncoded = decode(timeLineEvent)
 
                 sample shouldBe eventEncoded
             }

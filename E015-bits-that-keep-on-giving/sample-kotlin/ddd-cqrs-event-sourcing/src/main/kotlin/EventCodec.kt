@@ -2,17 +2,9 @@ import dev.forkhandles.tuples.Tuple5
 import java.time.LocalDateTime
 import java.util.*
 
-/**
- * A codec object that cobble together
- * an encode function and a decode function
- */
-data class EventCodec<Event, Format> internal constructor(
-    val encode: (Event) -> EventData<Format>,
-    val decode: (TimeLineEvent<Format>) -> Event?
-)
+typealias Encoder<Event, Format> = (Event) -> EventData<Format>
 
-typealias EncodeFn<Event, Format> = (Event) -> Tuple5<String, Format, Format, UUID, LocalDateTime>
-typealias DecodeFn<Event, Format> = (TimeLineEvent<Format>) -> Event?
+typealias Decoder<Format, Event> = (TimeLineEvent<Format>) -> Event?
 
 /**
  * Create an EventCodec
@@ -22,9 +14,9 @@ typealias DecodeFn<Event, Format> = (TimeLineEvent<Format>) -> Event?
  * @param decode Attempt to map an event stored data back to its corresponding Domain event object
  */
 fun <Event : Any, Format : Any> create(
-    encode: EncodeFn<Event, Format>,
-    decode: DecodeFn<Event, Format>
-): EventCodec<Event, Format> {
+    encode: (Event) -> Tuple5<String, Format, Format, UUID, LocalDateTime>,
+    decode: (TimeLineEvent<Format>) -> Event?
+): Pair<Encoder<Event, Format>, Decoder<Format, Event>> {
 
     val encFn = { event: Event ->
         val (eventType, data, metadata, eventId, timestamp) = encode(event)
@@ -35,5 +27,5 @@ fun <Event : Any, Format : Any> create(
         decode(encoded)
     }
 
-    return EventCodec(encFn, decFn)
+    return encFn to decFn
 }
