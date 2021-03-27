@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api(project(":ktcodec"))
+    implementation(project(":ktcodec"))
     implementation(kotlin("stdlib"))
 
     implementation(platform("dev.forkhandles:forkhandles-bom:1.8.5.0"))
