@@ -13,10 +13,10 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
     Feature("Unpack Shipments in the Cargo Bay") {
 
         Scenario("Order given non-assigned employee to the factory to unpack shipments in the cargo bay") {
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
-            lateinit var state: List<FactoryDomainEvent>
             Given("Chewbacca assigned to the factory and 1 shipment transferred in the cargo bay") {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Chewbacca")),
                     ShipmentTransferredToCargoBay(
                         Shipment(
@@ -29,7 +29,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
             When("There is an order given to Yoda to unpack shipments in the cargo bay, There should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    unpackAndInventoryShipmentInCargoBay(Employee("Yoda"))(state)
+                    fold(currentEvents, UnpackAndInventoryShipmentInCargoBay(Employee("Yoda")))
                 }
 
             }
@@ -41,9 +41,9 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
         Scenario("No employee assigned to the factory to unpack the cargo bay") {
             lateinit var exception: Throwable
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             Given("No employee assigned to the factory and 1 shipment transferred to the cargo bay") {
-                state = listOf(
+                currentEvents = listOf(
                     ShipmentTransferredToCargoBay(
                         Shipment(
                             "shipment-1",
@@ -55,7 +55,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
             When("There is an order given to Yoda to unpack shipments in the cargo bay, There should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    unpackAndInventoryShipmentInCargoBay(Employee("Yoda"))(state)
+                    fold(currentEvents, UnpackAndInventoryShipmentInCargoBay(Employee("Yoda")))
                 }
             }
 
@@ -79,7 +79,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
             When("an order is given to Chewbacca to unpack shipments in the cargo bay, There should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"))(state)
+                    fold(state, UnpackAndInventoryShipmentInCargoBay(Employee("Chewbacca")))
                 }
             }
 
@@ -91,12 +91,12 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
         Scenario("Order an assigned employee to unpack a shipment in the cargo bay") {
 
             lateinit var events: List<FactoryDomainEvent>
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
 
             Given(
                 "Chewbacca assigned to the factory and there is a shipment of 4 chassis transferred to the cargo bay"
             ) {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Chewbacca")),
                     ShipmentTransferredToCargoBay(
                         Shipment(
@@ -109,7 +109,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
 
             When("There is an order given to Chewbacca to unpack the cargo bay") {
-                events = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"))(state)
+                events = fold(currentEvents, UnpackAndInventoryShipmentInCargoBay(Employee("Chewbacca")))
             }
 
             Then("Chewbacca unpacked shipment in the cargo bay") {
@@ -121,7 +121,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
         }
 
         Scenario("Order an assigned employee to unpack two shipments in the cargo bay") {
-            lateinit var events: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var state: List<FactoryDomainEvent>
             Given(
                 "Chewbacca assigned to the factory and there is a shipment of 4 chassis " +
@@ -148,12 +148,12 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
 
             When("There is an order given to Chewbacca to unpack shipment the cargo bay") {
-                events = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"))(state)
+                currentEvents = fold(state, UnpackAndInventoryShipmentInCargoBay(Employee("Chewbacca")))
 
             }
 
             Then("Chewbacca unpack 3 chassis, 2 wheel and 3 engines") {
-                events shouldContain ShipmentUnpackedInCargoBay(
+                currentEvents shouldContain ShipmentUnpackedInCargoBay(
                     Employee("Chewbacca"), listOf(
                         CarPartPackage(CarPart("chassis"), 4),
                         CarPartPackage(CarPart("wheel"), 2),
@@ -189,7 +189,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
             }
 
             When("There is an order given to Chewbacca to unpack shipment in the cargo bay") {
-                events = unpackAndInventoryShipmentInCargoBay(Employee("Chewbacca"))(state)
+                events = fold(state, UnpackAndInventoryShipmentInCargoBay(Employee("Chewbacca")))
             }
 
             Then("Chewbacca unpacked the cargo bay with a 4-chassis pack, 2 wheels-pack and 3-chassis pack") {
@@ -230,7 +230,7 @@ object UnpackShipmentInTheCargoBayFeature : Spek({
 
             When("Yoda is ordered to unpack the shipment in the cargo bay, There should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    unpackAndInventoryShipmentInCargoBay(Employee("Yoda"))(state)
+                    fold(state, UnpackAndInventoryShipmentInCargoBay(Employee("Yoda")))
                 }
             }
 

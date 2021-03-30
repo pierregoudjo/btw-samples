@@ -11,30 +11,30 @@ object AssignEmployeeToTheFactoryFeature : Spek({
     Feature("Assign employee to the factory") {
 
         Scenario("Assign employee to an empty factory") {
-            lateinit var state: List<FactoryDomainEvent>
-            lateinit var events: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
+            lateinit var resultingEvents: List<FactoryDomainEvent>
 
             Given("An empty factory") {
-                state = emptyList()
+                currentEvents = emptyList()
             }
             When("An employee named \"Fry\" comes to the factory") {
-                events = assignEmployeeToFactory(Employee("Fry"))(state)
+                resultingEvents = fold(currentEvents, AssignEmployeeToFactory(Employee("Fry")))
             }
             Then("Fry is assigned to the factory") {
-                events shouldContain EmployeeAssignedToFactory(Employee("Fry"))
+                resultingEvents shouldContain EmployeeAssignedToFactory(Employee("Fry"))
             }
         }
 
         Scenario("An already assigned employee is assigned again") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
 
             Given("A factory where an employee named \"Fry\" is assigned") {
-                state = listOf(EmployeeAssignedToFactory(Employee("Fry")))
+                currentEvents = listOf(EmployeeAssignedToFactory(Employee("Fry")))
 
             }
 
             When("An employee named \"Fry\" comes to the factory, There should be an error") {
-                exception = shouldThrow { assignEmployeeToFactory(Employee("Fry"))(state) }
+                exception = shouldThrow { fold(currentEvents, AssignEmployeeToFactory((Employee("Fry")))) }
             }
 
             Then("The error message should contain \"the name of Fry only one can have\" ") {
@@ -43,14 +43,16 @@ object AssignEmployeeToTheFactoryFeature : Spek({
         }
 
         Scenario("Bender comes to the factory") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
 
             Given("An empty factory") {
-                state = emptyList()
+                currentEvents = emptyList()
             }
 
             When("An employee named Bender is assigned to the factory, there should be an error") {
-                exception = shouldThrow<IllegalStateException> { assignEmployeeToFactory(Employee("Bender"))(state) }
+                exception = shouldThrow<IllegalStateException> {
+                    fold(currentEvents, AssignEmployeeToFactory(Employee("Bender")))
+                }
             }
 
             Then("The error message should contain \"Guys with name 'bender' are trouble\" ") {

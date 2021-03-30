@@ -13,11 +13,11 @@ import org.spekframework.spek2.style.gherkin.Feature
 object TransferringShipmentToCargoBayFeature : Spek({
     Feature("Transferring shipment to cargo bay") {
         Scenario("An empty shipment comes to the cargo bay") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given("An employee 'Yoda' assigned to the factory") {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(
                         Employee("Yoda")
                     )
@@ -26,12 +26,15 @@ object TransferringShipmentToCargoBayFeature : Spek({
 
             When("An empty shipment comes to the cargo bay, there should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    transferShipmentToCargoBay(
-                        Shipment(
-                            "some shipment",
-                            emptyList()
+                    fold(
+                        currentEvents,
+                        TransferShipmentToCargoBay(
+                            Shipment(
+                                "some shipment",
+                                emptyList()
+                            )
                         )
-                    )(state)
+                    )
                 }
             }
 
@@ -41,19 +44,14 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("An empty shipment come into an empty factory") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
             Given("An empty factory") {
-                state = emptyList()
+                currentEvents = emptyList()
             }
             When("An empty shipment comes to the cargo bay, there should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    transferShipmentToCargoBay(
-                        Shipment(
-                            "some shipment",
-                            emptyList()
-                        )
-                    )(state)
+                    fold(currentEvents, TransferShipmentToCargoBay(Shipment("some shipment", emptyList())))
                 }
             }
             And(
@@ -66,21 +64,24 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("A shipment come into an empty factory") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given("An empty factory") {
-                state = emptyList()
+                currentEvents = emptyList()
             }
 
             When("An empty shipment comes to the cargo bay, There should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    transferShipmentToCargoBay(
-                        Shipment(
-                            "some shipment",
-                            emptyList()
+                    fold(
+                        currentEvents,
+                        TransferShipmentToCargoBay(
+                            Shipment(
+                                "some shipment",
+                                emptyList()
+                            )
                         )
-                    )(state)
+                    )
                 }
             }
             And(
@@ -93,11 +94,11 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("There are already two shipments") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given("There is an employee assigned to the factory and two shipments waiting in the cargo bay") {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Chewbacca")),
                     ShipmentTransferredToCargoBay(
                         Shipment(
@@ -118,12 +119,15 @@ object TransferringShipmentToCargoBayFeature : Spek({
 
             When("A new shipment comes to the cargo bay, there should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    transferShipmentToCargoBay(
-                        Shipment(
-                            "shipment-13",
-                            listOf(CarPartPackage(CarPart("bmw6"), 6))
+                    fold(
+                        currentEvents,
+                        TransferShipmentToCargoBay(
+                            Shipment(
+                                "shipment-13",
+                                listOf(CarPartPackage(CarPart("bmw6"), 6))
+                            )
                         )
-                    )(state)
+                    )
                 }
             }
 
@@ -134,10 +138,10 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("A shipment comes to a factory with an employee assigned and 1 shipment of in the cargo bay") {
-            lateinit var state: List<FactoryDomainEvent>
-            lateinit var events: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
+            lateinit var resultingEvents: List<FactoryDomainEvent>
             Given("A factory with an employee assigned and 1 shipment in the cargo bay") {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Chewbacca")),
                     ShipmentTransferredToCargoBay(
                         Shipment(
@@ -150,16 +154,19 @@ object TransferringShipmentToCargoBayFeature : Spek({
             }
 
             When("A shipment comes to the factory") {
-                events = transferShipmentToCargoBay(
-                    Shipment(
-                        "shipment-56",
-                        listOf(CarPartPackage(CarPart("engine"), 6), CarPartPackage(CarPart("chassis"), 2))
+                resultingEvents = fold(
+                    currentEvents,
+                    TransferShipmentToCargoBay(
+                        Shipment(
+                            "shipment-56",
+                            listOf(CarPartPackage(CarPart("engine"), 6), CarPartPackage(CarPart("chassis"), 2))
+                        )
                     )
-                )(state)
+                )
             }
 
             Then("The shipment is transferred to the cargo bay") {
-                events shouldContain ShipmentTransferredToCargoBay(
+                resultingEvents shouldContain ShipmentTransferredToCargoBay(
                     Shipment(
                         "shipment-56",
                         listOf(CarPartPackage(CarPart("engine"), 6), CarPartPackage(CarPart("chassis"), 2))
@@ -170,10 +177,10 @@ object TransferringShipmentToCargoBayFeature : Spek({
         }
 
         Scenario("A shipment of 5 wheels and 7 engines comes to the factory and the employee curse") {
-            lateinit var state: List<FactoryDomainEvent>
-            lateinit var events: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
+            lateinit var resultingEvents: List<FactoryDomainEvent>
             Given("A factory with an employee assigned and 1 shipment in the cargo bay") {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Chewbacca")),
                     ShipmentTransferredToCargoBay(
                         Shipment(
@@ -185,16 +192,19 @@ object TransferringShipmentToCargoBayFeature : Spek({
 
             }
             When("A shipment of 5 wheel and 7 engines comes to the factory") {
-                events = transferShipmentToCargoBay(
-                    Shipment(
-                        "shipment-56",
-                        listOf(CarPartPackage(CarPart("wheel"), 5), CarPartPackage(CarPart("engines"), 7))
+                resultingEvents = fold(
+                    currentEvents,
+                    TransferShipmentToCargoBay(
+                        Shipment(
+                            "shipment-56",
+                            listOf(CarPartPackage(CarPart("wheel"), 5), CarPartPackage(CarPart("engines"), 7))
+                        )
                     )
-                )(state)
+                )
 
             }
             Then("The shipment is transferred to the cargo bay") {
-                events shouldContain ShipmentTransferredToCargoBay(
+                resultingEvents shouldContain ShipmentTransferredToCargoBay(
                     Shipment(
                         "shipment-56",
                         listOf(CarPartPackage(CarPart("wheel"), 5), CarPartPackage(CarPart("engines"), 7))
@@ -202,7 +212,7 @@ object TransferringShipmentToCargoBayFeature : Spek({
                 )
             }
             And("A curse word has been uttered by one of the employee") {
-                events.filterIsInstance<CurseWordUttered>() shouldNot beEmpty()
+                resultingEvents.filterIsInstance<CurseWordUttered>() shouldNot beEmpty()
             }
         }
     }

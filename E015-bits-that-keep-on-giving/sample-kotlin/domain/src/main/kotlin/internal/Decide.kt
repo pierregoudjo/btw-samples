@@ -3,8 +3,27 @@ import model.Curse
 import model.Employee
 import model.Shipment
 
-fun produceCar(employee: Employee, carModel: CarModel): Command<FactoryDomainEvent> = { events ->
-    val state = Factory(events)
+internal fun assignEmployeeToFactory(employee: Employee, state: Factory): List<FactoryDomainEvent> {
+    echoCommand("assign employee $employee to the factory")
+
+    // Hey look, a business rule implementation
+    if (state.listOfEmployeeNames.contains(employee)) {
+        fail("the name of $employee only one can have")
+    }
+    // another check that needs to happen when assigning employees to the factory
+    // multiple options to prove this critical business rule:
+    // John Bender: http://en.wikipedia.org/wiki/John_Bender_(character)#Main_characters
+    // Bender Bending Rodríguez: http://en.wikipedia.org/wiki/Bender_(Futurama)
+
+    if (employee == Employee("Bender")) {
+        fail("Guys with the name 'bender' are trouble")
+    }
+
+    doPaperWork("Assign employee to the factory")
+    return listOf(EmployeeAssignedToFactory(employee))
+}
+
+internal fun produceCar(employee: Employee, carModel: CarModel, state: Factory): List<FactoryDomainEvent> {
 
     echoCommand("Order $employee to build a $carModel car")
 
@@ -31,11 +50,10 @@ fun produceCar(employee: Employee, carModel: CarModel): Command<FactoryDomainEve
 
     doPaperWork("Writing car specification documents")
 
-    listOf(CarProduced(employee, carModel, neededPartsToBuildTheCar))
+    return listOf(CarProduced(employee, carModel, neededPartsToBuildTheCar))
 }
 
-fun unpackAndInventoryShipmentInCargoBay(employee: Employee): Command<FactoryDomainEvent> = { events ->
-    val state = Factory(events)
+internal fun unpackAndInventoryShipmentInCargoBay(employee: Employee, state: Factory): List<FactoryDomainEvent> {
 
     echoCommand("Order $employee to unpack shipments from cargo bay")
 
@@ -53,7 +71,7 @@ fun unpackAndInventoryShipmentInCargoBay(employee: Employee): Command<FactoryDom
 
     doRealWork("passing supplies")
 
-    listOf(
+    return listOf(
         ShipmentUnpackedInCargoBay(
             employee,
             state.shipmentsWaitingToBeUnpacked.map { it.carPartPackages }.flatten()
@@ -61,31 +79,9 @@ fun unpackAndInventoryShipmentInCargoBay(employee: Employee): Command<FactoryDom
     )
 }
 
-fun assignEmployeeToFactory(employee: Employee): Command<FactoryDomainEvent> = { events ->
-    val state = Factory(events)
-    echoCommand("assign employee $employee to the factory")
+internal const val NUMBER_OF_PARTS_TOO_MUCH_TO_HANDLE = 10
 
-    // Hey look, a business rule implementation
-    if (state.listOfEmployeeNames.contains(employee)) {
-        fail("the name of $employee only one can have")
-    }
-    // another check that needs to happen when assigning employees to the factory
-    // multiple options to prove this critical business rule:
-    // John Bender: http://en.wikipedia.org/wiki/John_Bender_(character)#Main_characters
-    // Bender Bending Rodríguez: http://en.wikipedia.org/wiki/Bender_(Futurama)
-
-    if (employee == Employee("Bender")) {
-        fail("Guys with the name 'bender' are trouble")
-    }
-
-    doPaperWork("Assign employee to the factory")
-    listOf(EmployeeAssignedToFactory(employee))
-}
-
-private const val NUMBER_OF_PARTS_TOO_MUCH_TO_HANDLE = 10
-
-fun transferShipmentToCargoBay(shipment: Shipment): Command<FactoryDomainEvent> = { events ->
-    val state = Factory(events)
+internal fun transferShipmentToCargoBay(shipment: Shipment, state: Factory): List<FactoryDomainEvent> {
     echoCommand("transfer shipment to cargo")
 
     if (state.listOfEmployeeNames.isEmpty()) {
@@ -116,5 +112,14 @@ fun transferShipmentToCargoBay(shipment: Shipment): Command<FactoryDomainEvent> 
         else -> emptyList()
     }
 
-    transferredEvent + curseWordEvent
+    return transferredEvent + curseWordEvent
+}
+
+fun fold(events: List<FactoryDomainEvent>, command: FactoryCommand): List<FactoryDomainEvent> {
+    val factory = events.fold(Factory.empty) { acc, curr -> evolve(curr, acc) }
+    return decide(command, factory)
+}
+
+operator fun List<FactoryDomainEvent>.times(command: FactoryCommand): List<FactoryDomainEvent> {
+    return fold(this, command)
 }

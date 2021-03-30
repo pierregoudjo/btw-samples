@@ -10,17 +10,17 @@ object ProduceACarFeature : Spek({
     Feature("Produce a car") {
 
         Scenario("Order to a non assigned employee to produce a model T car") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given("Yoda assigned to the factory") {
-                state = listOf(EmployeeAssignedToFactory(Employee("Yoda")))
+                currentEvents = listOf(EmployeeAssignedToFactory(Employee("Yoda")))
 
             }
 
             When("Order given to Chewbacca to produce a model T car, There should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    produceCar(Employee("Chewbacca"), CarModel.MODEL_T)(state)
+                    fold(currentEvents, ProduceCar(Employee("Chewbacca"), CarModel.MODEL_T))
                 }
             }
 
@@ -30,11 +30,11 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("Order to build a model T car but there is not enough parts") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels and 5 bits and pieces") {
-                state =
+                currentEvents =
                     listOf(
                         EmployeeAssignedToFactory(Employee("Yoda")),
                         ShipmentTransferredToCargoBay(
@@ -59,7 +59,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to build a model T car, There should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
+                    fold(currentEvents, ProduceCar(Employee("Yoda"), CarModel.MODEL_T))
                 }
 
             }
@@ -73,10 +73,10 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("Order to build a model V car but there is not enough parts") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels and 5 bits and pieces") {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Yoda")),
                     ShipmentTransferredToCargoBay(
                         Shipment(
@@ -99,10 +99,7 @@ object ProduceACarFeature : Spek({
             }
             When("Yoda is ordered to build a model T car, There should be an error") {
                 exception = shouldThrow<IllegalStateException> {
-                    produceCar(
-                        Employee("Yoda"),
-                        CarModel.MODEL_V
-                    )(state)
+                    fold(currentEvents, ProduceCar(Employee("Yoda"), CarModel.MODEL_V))
                 }
             }
 
@@ -115,11 +112,11 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("Order to build a model T car and there is enough parts") {
-            lateinit var state: List<FactoryDomainEvent>
-            lateinit var events: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
+            lateinit var resultingEvents: List<FactoryDomainEvent>
 
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines") {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Yoda")),
                     ShipmentTransferredToCargoBay(
                         Shipment(
@@ -144,11 +141,12 @@ object ProduceACarFeature : Spek({
 
             }
             When("Yoda is ordered to produce a model T car") {
-                events = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
+                println(currentEvents.fold(Factory.empty) { acc, curr -> evolve(curr, acc) })
+                resultingEvents = fold(currentEvents, ProduceCar(Employee("Yoda"), CarModel.MODEL_T))
             }
             Then("Then a model T car is built") {
 
-                events shouldContain CarProduced(
+                resultingEvents shouldContain CarProduced(
                     Employee("Yoda"),
                     CarModel.MODEL_T,
                     CarModel.neededParts(CarModel.MODEL_T)
@@ -157,11 +155,11 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("Order to build a model V car and there is enough parts") {
-            lateinit var state: List<FactoryDomainEvent>
-            lateinit var events: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
+            lateinit var resultingEvents: List<FactoryDomainEvent>
 
             Given("Yoda is assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines") {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Yoda")),
                     ShipmentTransferredToCargoBay(
                         Shipment(
@@ -185,10 +183,10 @@ object ProduceACarFeature : Spek({
                 )
             }
             When("Yoda is ordered to produce a model V car") {
-                events = produceCar(Employee("Yoda"), CarModel.MODEL_V)(state)
+                resultingEvents = fold(currentEvents, ProduceCar(Employee("Yoda"), CarModel.MODEL_V))
             }
             Then("Then a model V car is built") {
-                events shouldContain CarProduced(
+                resultingEvents shouldContain CarProduced(
                     Employee("Yoda"),
                     CarModel.MODEL_V,
                     CarModel.neededParts(CarModel.MODEL_V)
@@ -197,7 +195,7 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("Order to build a model T car and checking the remaining parts") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var intermediateState: List<FactoryDomainEvent>
             lateinit var events: List<FactoryDomainEvent>
             lateinit var factory: Factory
@@ -205,7 +203,7 @@ object ProduceACarFeature : Spek({
             Given(
                 "Yoda and Luke assigned to the factory and there is 3 chassis, 5 wheels 5 bits and pieces and 2 engines"
             ) {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Yoda")),
                     EmployeeAssignedToFactory(Employee("Luke")),
                     ShipmentTransferredToCargoBay(
@@ -236,12 +234,12 @@ object ProduceACarFeature : Spek({
 
             }
             When("Yoda is ordered to produce a model T car and Luke is ordered to produce a model V car") {
-                val produceCarEvents = produceCar(Employee("Yoda"), CarModel.MODEL_T)(state)
-                intermediateState = apply(produceCarEvents, state)
-                events = produceCar(Employee("Luke"), CarModel.MODEL_V)(intermediateState)
-                state = apply(events, intermediateState)
+                val produceCarEvents = fold(currentEvents, ProduceCar(Employee("Yoda"), CarModel.MODEL_T))
+                intermediateState = currentEvents + produceCarEvents
+                events = fold(intermediateState, ProduceCar(Employee("Luke"), CarModel.MODEL_V))
+                currentEvents = intermediateState + events
 
-                factory = Factory(state)
+                factory = currentEvents.fold(Factory.empty, { acc, curr -> evolve(curr, acc) })
             }
 
             Then("There is 2 chassis left") {
@@ -262,14 +260,14 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("Not enough stock to build a new car after some have already been built") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given(
                 "Yoda assigned to the factory, 3 chassis, 5 wheels 5 bits and pieces and 2 engines " +
                         "shipment transferred and unpacked and 2 model T cars built"
             ) {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Yoda")),
                     EmployeeAssignedToFactory(Employee("Luke")),
                     EmployeeAssignedToFactory(Employee("Lea")),
@@ -309,7 +307,9 @@ object ProduceACarFeature : Spek({
 
             }
             When("Yoda is ordered to build a model T car, There should be an error") {
-                exception = shouldThrow<IllegalStateException> { produceCar(Employee("Lea"), CarModel.MODEL_T)(state) }
+                exception = shouldThrow<IllegalStateException> {
+                    fold(currentEvents, ProduceCar(Employee("Lea"), CarModel.MODEL_T))
+                }
             }
             And(
                 "The error should contains the message \"There is not enough part to build ${CarModel.MODEL_T} car\" "
@@ -319,14 +319,14 @@ object ProduceACarFeature : Spek({
         }
 
         Scenario("An employee may only produce a car once a day") {
-            lateinit var state: List<FactoryDomainEvent>
+            lateinit var currentEvents: List<FactoryDomainEvent>
             lateinit var exception: Throwable
 
             Given(
                 "Yoda an employee of the factory who has already built a car today" +
                         " and enough part left on the shelf to build a model T car"
             ) {
-                state = listOf(
+                currentEvents = listOf(
                     EmployeeAssignedToFactory(Employee("Yoda")),
                     ShipmentUnpackedInCargoBay(
                         Employee("Yoda"),
@@ -344,7 +344,9 @@ object ProduceACarFeature : Spek({
                 )
             }
             When("Yoda is ordered to build a car") {
-                exception = shouldThrow<IllegalStateException> { produceCar(Employee("Yoda"), CarModel.MODEL_T)(state) }
+                exception = shouldThrow<IllegalStateException> {
+                    fold(currentEvents, ProduceCar(Employee("Yoda"), CarModel.MODEL_T))
+                }
             }
 
             Then("The error should contains a message \"Yoda may only produce a car once a day\"") {

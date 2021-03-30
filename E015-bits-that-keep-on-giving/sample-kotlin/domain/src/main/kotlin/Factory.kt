@@ -1,56 +1,41 @@
-import kotlinx.collections.immutable.toPersistentList
-import model.Employees
+import internal.addShipment
+import internal.registerEmployee
+import internal.unpackShipment
+import internal.updateInventory
+import internal.updateListofEmployeeWhoBuiltCars
+import model.Employee
 import model.Inventory
-import model.Shipments
+import model.Shipment
 
-typealias Events = List<FactoryDomainEvent>
-
-
-class Factory(journal: Events) : Aggregate<FactoryDomainEvent>{
-    override val journal = journal.toPersistentList()
-
-    val listOfEmployeeNames: Employees by lazy {
-        this.journal
-            .filterIsInstance<EmployeeAssignedToFactory>()
-            .fold(emptyList(), { acc, event -> acc + event.employee })
+data class Factory(
+    val listOfEmployeeNames: List<Employee>,
+    val shipmentsWaitingToBeUnpacked: List<Shipment>,
+    val inventory: Inventory,
+    val employeesWhoHasBuiltCars: List<Employee>,
+    val employeeWhoHasUnpackedShipmentsInCargoBayToday: List<Employee>,
+) {
+    companion object {
+        val empty = Factory(
+            emptyList(),
+            emptyList(),
+            emptyMap(),
+            emptyList(),
+            emptyList(),
+        )
     }
+}
 
-    val shipmentsWaitingToBeUnpacked: Shipments by lazy {
-        this.journal
-            .fold(emptyList(), { acc, event ->
-                when (event) {
-                    is ShipmentTransferredToCargoBay -> acc + listOf(event.shipment)
-                    is ShipmentUnpackedInCargoBay -> emptyList()
-                    else -> acc
-                }
-            })
-    }
+fun evolve(event: FactoryDomainEvent, factory: Factory): Factory = when (event) {
+    is EmployeeAssignedToFactory -> registerEmployee(event.employee, factory)
+    is CarProduced -> updateInventory(event.carPartPackages, updateListofEmployeeWhoBuiltCars(event.employee, factory))
+    is CurseWordUttered -> factory
+    is ShipmentTransferredToCargoBay -> addShipment(event.shipment, factory)
+    is ShipmentUnpackedInCargoBay -> unpackShipment(event.carPartPackages, event.employee, factory)
+}
 
-    val inventory: Inventory by lazy {
-        val partsUsed = this.journal
-            .filterIsInstance<CarProduced>()
-            .flatMap { it.carPartPackages }
-            .groupBy { it.part }
-            .mapValues { it.value.sumOf { carPart -> carPart.quantity } }
-
-        val partsUnpacked = this.journal
-            .filterIsInstance<ShipmentUnpackedInCargoBay>()
-            .flatMap { it.carPartPackages }
-            .groupBy { it.part }
-            .mapValues { it.value.sumOf { carPart -> carPart.quantity } }
-
-        partsUnpacked.mapValues { it.value - partsUsed.getOrDefault(it.key, 0) }
-    }
-
-    val employeesWhoHasBuiltCars: Employees by lazy {
-        this.journal
-            .filterIsInstance<CarProduced>()
-            .map { it.employee }
-    }
-
-    val employeeWhoHasUnpackedShipmentsInCargoBayToday: Employees by lazy {
-        this.journal
-            .filterIsInstance<ShipmentUnpackedInCargoBay>()
-            .map { it.employee }
-    }
+fun decide(command: FactoryCommand, factory: Factory): List<FactoryDomainEvent> = when (command) {
+    is AssignEmployeeToFactory -> assignEmployeeToFactory(command.employee, factory)
+    is ProduceCar -> produceCar(command.employee, command.carModel, factory)
+    is TransferShipmentToCargoBay -> transferShipmentToCargoBay(command.shipment, factory)
+    is UnpackAndInventoryShipmentInCargoBay -> unpackAndInventoryShipmentInCargoBay(command.employee, factory)
 }

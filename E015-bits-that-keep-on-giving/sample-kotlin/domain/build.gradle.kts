@@ -10,7 +10,6 @@ version = "1.0-SNAPSHOT"
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.3")
-    implementation(project(":ddd-cqrs-event-sourcing"))
 
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.15")
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.15")
